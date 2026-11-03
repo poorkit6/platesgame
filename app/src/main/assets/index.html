@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0e1120">
+<title>Номерной джекпот</title>
+<style>
+:root{
+  --bg1:#0e1120;--bg2:#1a1f3a;--card:#222845;--card2:#2b3254;--line:#ffffff1a;
+  --text:#eef0ff;--dim:#9aa2c8;--gold:#ffc94a;--green:#5be3a0;--red:#ff6b7d;
+  --c-common:#9aa3ad;--c-rare:#4aa3ff;--c-epic:#b565ff;--c-legendary:#ffc94a;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;height:100%;background:var(--bg1);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;touch-action:manipulation}
+body{background:radial-gradient(120% 80% at 50% 0%,var(--bg2),var(--bg1) 70%)}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+#app{height:100%;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top);max-width:560px;margin:0 auto}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 6px}
+.bal small{display:block;color:var(--dim);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.bal b{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;transition:color .3s}
+.bal b.up{color:var(--green)} .bal b.down{color:var(--red)}
+#menuBtn{width:42px;height:42px;border-radius:12px;background:var(--card);font-size:20px}
+
+main{flex:1;position:relative;min-height:0}
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.active{display:flex}
+
+/* ---------- plate ---------- */
+@font-face{font-family:'PlateFont';src:url(data:font/woff;base64,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) format('woff');font-weight:800}
+.plate{--fs:40px;display:inline-flex;align-items:stretch;height:1.95em;font-size:var(--fs);position:relative;overflow:hidden;
+  font-family:'PlateFont','Inter',Arial,sans-serif;font-weight:800;color:#0b0b0c;line-height:1;white-space:nowrap;
+  border-radius:.2em;padding:.07em;
+  background:linear-gradient(180deg,#e3e5e6 0%,#c9cccd 50%,#d6d8d9 100%);
+  box-shadow:0 .08em .3em rgba(0,0,0,.6),inset 0 0 0 .045em #1d1f21,inset 0 0 0 .07em #f3f4f4,inset 0 -.12em .2em rgba(0,0,0,.18)}
+.plate::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.10) 0 1px,rgba(0,0,0,.035) 1px 2px)}
+.plate .num{flex:1;display:flex;align-items:center;justify-content:center;padding:0 .16em 0 .22em;position:relative}
+.plate .g{display:flex}
+.plate .g+.g{margin-left:.1em}
+.plate .num span{display:inline-block;min-width:.64em;text-align:center;font-size:1.52em;letter-spacing:-.01em;
+  -webkit-text-stroke:.02em #0b0b0c;text-shadow:0 .012em 0 rgba(255,255,255,.6),0 -.01em 0 rgba(0,0,0,.35)}
+.plate .reg{position:relative;width:2.3em;margin-left:.08em;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border-left:.035em solid #85898b;box-shadow:inset .035em 0 0 #f4f5f5}
+.plate .rn{font-size:1.32em;line-height:.92;letter-spacing:-.02em;-webkit-text-stroke:.02em #0b0b0c;text-shadow:0 .012em 0 rgba(255,255,255,.6)}
+.plate .rn.r3{font-size:1.04em}
+.plate .rus{display:flex;align-items:center;gap:.14em;font-size:.5em;margin-top:.14em;letter-spacing:.02em}
+.plate .flag{width:1.4em;height:.92em;display:inline-block;background:linear-gradient(#fff 33%,#0039a6 33% 66%,#d52b1e 66%);border:1px solid #333}
+.plate.spinning .num span,.plate.spinning .rn{filter:blur(.7px);opacity:.88}
+.plate.xl{--fs:min(10.2vw,52px)}
+.plate.md{--fs:min(5.4vw,23px)}
+.plate.lg{--fs:min(9.6vw,52px)}
+.plate::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%);transform:translateX(-120%);pointer-events:none}
+.rar-legendary .plate::after,.plate.shine::after{animation:shine 2.6s ease-in-out infinite}
+@keyframes shine{0%,30%{transform:translateX(-120%)}70%,100%{transform:translateX(120%)}}
+.plate .hide{opacity:0}
+.plate .in{animation:charIn .45s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes charIn{0%{opacity:0;transform:scale(1.9);filter:blur(4px)}55%{opacity:1;filter:blur(0);text-shadow:0 0 .25em #ffd6e8,0 0 .55em #c6e4ff}100%{opacity:1;transform:scale(1)}}
+
+/* ---------- play ---------- */
+#screen-play{align-items:center;justify-content:center;text-align:center;padding:0 12px}
+.stage{display:flex;flex-direction:column;align-items:center;gap:14px;width:100%}
+.plate-wrap{--rc:var(--c-common);padding:16px 14px;border-radius:22px;transition:box-shadow .4s,background .4s;
+  background:rgba(255,255,255,.03);box-shadow:0 0 0 2px #ffffff10}
+.plate-wrap.rar-common{--rc:var(--c-common)}
+.plate-wrap.rar-rare{--rc:var(--c-rare);box-shadow:0 0 0 2px var(--rc),0 0 28px #4aa3ff77;background:#4aa3ff14}
+.plate-wrap.rar-epic{--rc:var(--c-epic);box-shadow:0 0 0 2px var(--rc),0 0 40px #b565ffaa;background:#b565ff1a}
+.plate-wrap.rar-legendary{--rc:var(--c-legendary);box-shadow:0 0 0 2px var(--rc),0 0 60px #ffc94acc,0 0 110px #ff9ad577;background:#ffc94a1a}
+.plate-wrap.pop{animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:scale(.8)}100%{transform:scale(1)}}
+.empty-plate{opacity:.55}
+.rar-badge{display:inline-block;padding:5px 14px;border-radius:99px;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#10131f;background:var(--rc,var(--c-common))}
+.rar-badge.rare{background:var(--c-rare)}.rar-badge.epic{background:var(--c-epic);color:#fff}.rar-badge.legendary{background:linear-gradient(90deg,#ffe08a,#ffb3d9,#b9d7ff,#ffe08a);background-size:200%;animation:flow 3s linear infinite}
+@keyframes flow{to{background-position:200% 0}}
+.price{font-size:clamp(28px,9vw,44px);font-weight:900;font-variant-numeric:tabular-nums;min-height:1.2em}
+.tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:28px;max-width:420px}
+.tag{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--card);color:var(--dim);border:1px solid var(--line)}
+.quick{display:flex;gap:10px;min-height:52px;width:100%;max-width:420px;justify-content:center}
+.btn{padding:14px 18px;border-radius:14px;font-weight:800;font-size:15px;background:var(--card2);transition:transform .1s,opacity .2s}
+.btn:active{transform:scale(.96)}
+.btn.sell{background:linear-gradient(135deg,#2f9e6d,#3fc58a);color:#07170f;flex:1}
+.btn.safe{background:linear-gradient(135deg,#5667d8,#7a8cff);color:#fff;flex:1}
+.btn.ghost{background:var(--card)}
+.btn.danger{background:#7a2535}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.status{color:var(--dim);font-size:14px;align-self:center}
+.hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;color:var(--dim);font-size:14px;pointer-events:none}
+.hint b{color:var(--text)}
+.hint.pulse{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+.hint.warn{color:var(--red)}
+
+/* ---------- lists ---------- */
+.list-screen{padding:0 12px}
+.toolbar{display:flex;gap:8px;padding:6px 0 10px;flex-wrap:wrap;align-items:center}
+.toolbar .btn{padding:10px 14px;font-size:13px}
+.toolbar .sum{margin-left:auto;color:var(--dim);font-size:13px;text-align:right}
+.toolbar .sum b{color:var(--text);display:block;font-size:15px}
+.list{flex:1;overflow-y:auto;padding-bottom:12px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.item{background:var(--card);border-radius:16px;padding:12px;border-left:5px solid var(--rc,var(--c-common));display:flex;flex-direction:column;gap:10px}
+.item.rar-common{--rc:var(--c-common)}.item.rar-rare{--rc:var(--c-rare)}.item.rar-epic{--rc:var(--c-epic)}.item.rar-legendary{--rc:var(--c-legendary);background:linear-gradient(135deg,#3a3320,var(--card))}
+.item .top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.item .bot{display:flex;align-items:center;gap:8px}
+.item .val{font-weight:800;font-size:17px;font-variant-numeric:tabular-nums;flex:1}
+.item .val small{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--rc)}
+.item .btn{padding:9px 13px;font-size:13px}
+.empty{margin:auto;text-align:center;color:var(--dim);padding:30px;line-height:1.5}
+
+nav{display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0b0e1bdd;border-top:1px solid var(--line)}
+nav button{flex:1;padding:10px 4px;border-radius:12px;background:transparent;color:var(--dim);font-weight:700;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+nav button .ic{font-size:20px}
+nav button.active{background:var(--card);color:var(--text)}
+nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1405;border-radius:99px;font-size:10px;padding:1px 6px;font-weight:800}
+
+/* ---------- lock overlay ---------- */
+#lock{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px;text-align:center;
+  background:radial-gradient(90% 60% at 50% 45%,rgba(44,34,78,.97),rgba(8,8,20,.99));opacity:0;pointer-events:none;transition:opacity .4s}
+#lock.on{opacity:1;pointer-events:auto}
+.lk-title{font-weight:900;letter-spacing:.18em;font-size:clamp(16px,5vw,22px);background:linear-gradient(90deg,#ffe08a,#ffc2e4,#bcdcff,#ffe08a);background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 3s linear infinite}
+.lk-val{font-size:clamp(34px,11vw,56px);font-weight:900;font-variant-numeric:tabular-nums;color:#fff3c9;text-shadow:0 0 24px #ffd98a99,0 0 60px #ffb3d966}
+.lk-bar{width:min(320px,80vw);height:8px;border-radius:9px;background:#ffffff1c;overflow:hidden}
+.lk-bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#ffe08a,#ffb3d9,#b9d7ff);border-radius:9px;transform-origin:left;transform:scaleX(1)}
+.lk-bar i.run{transition:transform 5s linear;transform:scaleX(0)}
+.lk-sub{color:var(--dim);font-size:14px}
+.lk-sub b{color:var(--text);font-size:16px}
+#flash{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 45%,#fff 0%,#ffe6f3aa 30%,#d7e4ff00 70%)}
+#flash.go{animation:flash 1.1s ease-out}
+@keyframes flash{0%{opacity:0}12%{opacity:.85}100%{opacity:0}}
+#fx{position:fixed;inset:0;z-index:70;pointer-events:none;width:100%;height:100%}
+
+/* ---------- modal / toast ---------- */
+#modal{position:fixed;inset:0;z-index:80;background:#05060ccc;display:none;align-items:center;justify-content:center;padding:20px}
+#modal.on{display:flex}
+.mbox{background:var(--card);border-radius:20px;padding:22px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px}
+.mbox h3{margin:0;font-size:20px}
+.mbox p{margin:0;color:var(--dim);line-height:1.5;white-space:pre-line}
+.mbox .row{display:flex;gap:10px;flex-wrap:wrap}
+.mbox .row .btn{flex:1;min-width:120px}
+#toast{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translate(-50%,-20px);z-index:90;background:#10141fee;border:1px solid var(--line);padding:10px 18px;border-radius:99px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.owner{color:#ffe08a;font-weight:800;font-size:15px;text-shadow:0 0 14px #ffd98a66;max-width:92%;line-height:1.3}
+.owner:empty{display:none}
+.item .own{display:block;font-size:12px;font-weight:700;color:#ffe08a;margin-top:3px;line-height:1.25}
+.lk-title,.lk-owner,.lk-val,.lk-bar,.lk-sub{transition:opacity .7s,transform .7s}
+.lk-hide{opacity:0!important;transform:translateY(10px)}
+.lk-owner{font-size:clamp(16px,5vw,21px);font-weight:800;color:#ffe08a;text-shadow:0 0 18px #ffd98a88;max-width:92%;line-height:1.3}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="bal"><small>Баланс</small><b id="money">0 ₽</b></div>
+    <button id="menuBtn" aria-label="Меню">⋯</button>
+  </header>
+  <main>
+    <section id="screen-play" class="screen active">
+      <div class="stage">
+        <div id="plateWrap" class="plate-wrap"></div>
+        <div id="rarBox" style="min-height:30px"></div>
+        <div class="price" id="price"></div>
+        <div class="owner" id="owner"></div>
+        <div class="tags" id="tags"></div>
+        <div class="quick" id="quick"></div>
+      </div>
+      <div class="hint pulse" id="hint"></div>
+    </section>
+    <section id="screen-coll" class="screen list-screen">
+      <div class="toolbar">
+        <button class="btn ghost" data-bulk="common">Продать обычные</button>
+        <button class="btn ghost" data-bulk="all">Продать все</button>
+        <div class="sum" id="collSum"></div>
+      </div>
+      <div class="list" id="collList"></div>
+    </section>
+    <section id="screen-safe" class="screen list-screen">
+      <div class="toolbar">
+        <div style="color:var(--dim);font-size:13px;flex:1">Номера в сейфе не продаются кнопкой «Продать все».</div>
+        <div class="sum" id="safeSum"></div>
+      </div>
+      <div class="list" id="safeList"></div>
+    </section>
+  </main>
+  <nav>
+    <button data-tab="play" class="active"><span class="ic">🎰</span>Играть</button>
+    <button data-tab="coll"><span class="ic">🗂️</span>Коллекция<span class="badge" id="bColl" hidden></span></button>
+    <button data-tab="safe"><span class="ic">🔒</span>Сейф<span class="badge" id="bSafe" hidden></span></button>
+  </nav>
+</div>
+
+<div id="lock">
+  <div class="lk-title lk-hide" id="lkTitle">ЛЕГЕНДАРНЫЙ НОМЕР</div>
+  <div id="lkPlate"></div>
+  <div class="lk-owner lk-hide" id="lkOwner"></div>
+  <div class="lk-val lk-hide" id="lkVal"></div>
+  <div class="lk-bar lk-hide" id="lkBarWrap"><i id="lkBar"></i></div>
+  <div class="lk-sub lk-hide" id="lkSub">Прокрут разблокируется через <b id="lkSec">5</b></div>
+</div>
+<div id="flash"></div>
+<canvas id="fx"></canvas>
+<div id="modal"><div class="mbox" id="mbox"></div></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* =========================================================
+   НАСТРОЙКИ
+   ========================================================= */
+const COST = 2000, START = 100000, LOCK_MS = 5000, LEGEND_MIN = 1000000, CAP = 140000000, MIN = 500;
+const LET = 'АВЕКМНОРСТУХ'; // буквы, разрешённые на российских номерах
+const REGIONS = ('01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 82 83 86 87 89 91 92 93 94 95 99 ' +
+  '102 113 116 121 123 124 125 126 134 136 138 142 150 152 154 159 161 163 164 173 174 177 178 186 190 196 197 198 199 702 716 750 761 763 774 777 790 797 799 977').split(' ');
+const RARITIES = [
+  { id:'common',    name:'Обычный',     max:5000 },
+  { id:'rare',      name:'Редкий',      max:50000 },
+  { id:'epic',      name:'Эпический',   max:LEGEND_MIN },
+  { id:'legendary', name:'Легендарный', max:Infinity }
+];
+const rarityOf = v => RARITIES.find(r => v < r.max);
+
+/* =========================================================
+   ОЦЕНКА НОМЕРА
+   ========================================================= */
+// VALUATION START
+const WORDS = new Set(['КОТ','ТОК','МАК','ВОР','ХОР','ТОР','СОК','СОН','СОМ','ТУР','РОК','РАК','КАМ','ХАМ','МУХ','МАМ','КУМ','ТОН','ВАН','НОС','КОН','МОК','РОТ','СУК','ВЕК','ТЕМ','ЕХО']);
+const MOSCOW_REG = ['77','97','99','177','197','199','797','799','977','774','777'];
+const MOSCOW = new Set(MOSCOW_REG);
+const SPB = new Set(['78','98','178','198']);
+
+// латиница из списков → кириллица (на номерах используются только 12 «общих» букв)
+const L2C = { A:'А', B:'В', E:'Е', K:'К', M:'М', H:'Н', O:'О', P:'Р', C:'С', T:'Т', Y:'У', X:'Х' };
+const cyr = s => s.replace(/[A-Z]/g, c => L2C[c] || c);
+const parsePlate = s => { s = cyr(s); return { l1: s[0], d: s.slice(1, 4), l2: s.slice(4, 6), r: s.slice(6) }; };
+
+// Известные номера: [номер, цена]
+const PEOPLE = [
+  { n:'Юрий Волков', plates:[['C815MP09',3.4e6],['C111MP09',4.6e6],['B096CX09',2.6e6],['B656TK09',2.5e6],['B466HX09',2.4e6],['B911PK09',3.1e6],['B525CX09',2.7e6],['A525BC323',3.0e6]] },
+  { n:'Аскер Хасанович', plates:[['K055KT05',4.2e6]] },
+  { n:'Эрик Давидыч', plates:[['M707MM77',12e6]] },
+  { n:'Владимир Жириновский', plates:[['A777AA77',45e6]] },
+  { n:'Михаил Литвин', plates:[['B001OP777',30e6]] },
+  { n:'Асхаб Тамаев', plates:[['O007OO95',25e6],['A777CX95',22e6],['A777CX77',18e6]] },
+  { n:'Гусейн Гасанов', plates:[['Y001YY77',28e6],['A001AA99',20e6]] },
+  { n:'Александр Булкин', plates:[['Y777YY78',15e6],['O777OO178',14e6],['O887OO98',6e6],['M788MP78',5e6]] },
+  { n:'Дима Гордей', plates:[['H888HH777',16e6]] },
+  { n:'Сергей Нарышкин', plates:[['A002MP97',40e6]] }
+];
+const FAMOUS = new Map();
+const PLATE_LIST = [];
+PEOPLE.forEach(h => h.plates.forEach(([s, v]) => { const k = cyr(s); FAMOUS.set(k, { n: h.n, val: v }); PLATE_LIST.push(k); }));
+
+// Спецсерии (по открытым данным). reg — регионы, в которых серия считается «настоящей»
+const SERIES = [
+  { n:'Серия АМР · регион 97', l1:'А', l2:'МР', reg:['97'], base:28e6 },
+  { n:'Серия АМР · Москва', l1:'А', l2:'МР', reg:MOSCOW_REG, base:6.5e6 },
+  { n:'Серия ЕКХ · силовые ведомства', l1:'Е', l2:'КХ', reg:['77'], base:4e6 },
+  { n:'Спецсерия · Администрация Президента', l1:'В', l2:'АА', from:1, to:299, reg:MOSCOW_REG, base:5e6 },
+  { n:'Спецсерия · Полпреды Президента и органы власти', l1:'Р', l2:'АА', from:1, to:999, reg:MOSCOW_REG, base:2.2e6 },
+  { n:'Спецсерия · Совет Федерации', l1:'А', l2:'АС', from:1, to:100, reg:MOSCOW_REG, base:3e6 },
+  { n:'Спецсерия · Государственная Дума', l1:'А', l2:'АМ', from:1, to:999, reg:MOSCOW_REG, base:3.2e6 },
+  { n:'Спецсерия · Правительство РФ', l1:'А', l2:'АВ', from:1, to:999, reg:MOSCOW_REG, base:4e6 },
+  { n:'Спецсерия · ФСО России', l1:'А', l2:'АА', from:1, to:999, reg:MOSCOW_REG, base:4.5e6 },
+  { n:'Спецсерия · Конституционный Суд', l1:'А', l2:'АК', from:1, to:100, reg:MOSCOW_REG, base:3e6 },
+  { n:'Спецсерия · Верховный Суд', l1:'А', l2:'АК', from:101, to:200, reg:MOSCOW_REG, base:3e6 },
+  { n:'Спецсерия · Высший Арбитражный Суд', l1:'А', l2:'АК', from:201, to:300, reg:MOSCOW_REG, base:2.6e6 },
+  { n:'Спецсерия · Генеральная прокуратура', l1:'А', l2:'АК', from:301, to:400, reg:MOSCOW_REG, base:3.6e6 },
+  { n:'Спецсерия · Центральная избирательная комиссия', l1:'А', l2:'АК', from:401, to:450, reg:MOSCOW_REG, base:2.6e6 },
+  { n:'Спецсерия · Счётная палата', l1:'А', l2:'АК', from:501, to:600, reg:MOSCOW_REG, base:2.6e6 },
+  { n:'Спецсерия · ФАПСИ', l1:'А', l2:'АТ', from:1, to:100, reg:MOSCOW_REG, base:3e6 },
+  { n:'Спецсерия · резервная серия особых номеров', l1:'К', l2:'РР', from:1, to:999, reg:MOSCOW_REG, base:5e6 }
+];
+const seriesOf = p => {
+  const n = +p.d;
+  return SERIES.find(s => s.l1 === p.l1 && s.l2 === p.l2 && s.reg.includes(p.r) && (!s.from || (n >= s.from && n <= s.to)));
+};
+
+// шаг округления: чем дороже, тем крупнее
+function roundPrice(v){
+  const step = v < 2000 ? 50 : v < 20000 ? 100 : v < 200000 ? 1000 : v < 5e6 ? 10000 : 100000;
+  return Math.min(CAP, Math.max(MIN, Math.round(v / step) * step));
+}
+
+// красота цифр: множитель и подпись
+function digitMult(d){
+  const a = +d[0], b = +d[1], c = +d[2];
+  if (a === b && b === c) {
+    if (d === '777') return [1700, 'Три семёрки'];
+    if (d === '888' || d === '999' || d === '555') return [80, 'Три одинаковые цифры'];
+    return [45, 'Три одинаковые цифры'];
+  }
+  if (d === '007') return [300, 'Агент 007'];
+  if (d === '001') return [200, 'Номер 001'];
+  if (a === 0 && b === 0) return [24, 'Номер 00X'];
+  if (b === 0 && c === 0) return [14, 'Круглая сотня'];
+  if (b === a + 1 && c === b + 1) return [18, 'Цифры по порядку'];
+  if (b === a - 1 && c === b - 1) return [14, 'Цифры в обратном порядке'];
+  if (d === '228' || d === '911' || d === '112') return [5, 'Знаковое число'];
+  if (a === c) return [3, 'Зеркальные цифры'];
+  if (a === b || b === c) return [1.8, 'Пара цифр'];
+  if (a === 0) return [1.3, ''];
+  return [1, ''];
+}
+
+function valuate(p, rnd){
+  rnd = rnd || Math.random;
+  const key = p.l1 + p.d + p.l2 + p.r;
+
+  // абсолютный джекпот: одна буква ×3, 777 и регион 777
+  if (p.d === '777' && p.r === '777' && p.l1 === p.l2[0] && p.l2[0] === p.l2[1]) return { val: CAP, tags: ['АБСОЛЮТНЫЙ ДЖЕКПОТ'], owner: '' };
+
+  // 1) именные номера
+  const f = FAMOUS.get(key);
+  if (f) return { val: roundPrice(f.val * (0.94 + rnd() * 0.12)), tags: ['Известный номер'], owner: 'Известный номер · ' + f.n };
+
+  // 2) спецсерии
+  const s = seriesOf(p);
+  if (s) {
+    const fac = 1 + Math.min(2, Math.log10(digitMult(p.d)[0]));
+    return { val: roundPrice(s.base * (0.85 + rnd() * 0.4) * fac), tags: ['Спецсерия'], owner: s.n };
+  }
+
+  // 3) обычная оценка по красоте
+  let m = 1; const tags = [];
+  const d = p.d;
+  const dm = digitMult(d); m *= dm[0]; if (dm[1]) tags.push(dm[1]);
+
+  const l2a = p.l2[0], l2b = p.l2[1], L = p.l1 + p.l2;
+  if (p.l1 === l2a && l2a === l2b) { m *= 25; tags.push('Три одинаковые буквы'); }
+  else if (WORDS.has(L)) { m *= 7; tags.push('Буквы читаются как слово'); }
+  else if (l2a === l2b) { m *= 2.5; tags.push('Пара букв'); }
+  else if (p.l1 === l2a || p.l1 === l2b) { m *= 1.6; tags.push('Повтор буквы'); }
+
+  const r = p.r;
+  if (r === '777') { m *= 30; tags.push('Регион 777'); }
+  else if (MOSCOW.has(r)) { m *= (r.length === 2 ? 5 : 6); tags.push('Московский регион'); }
+  else if (SPB.has(r)) { m *= 3.5; tags.push('Санкт-Петербург'); }
+  else if (r.length === 2 && r[0] === r[1]) { m *= 1.5; tags.push('Красивый регион'); }
+
+  if (r.length === 3 && d === r) { m *= 4; tags.push('Номер = регион'); }
+  else if (r.length === 2 && d.slice(1) === r) { m *= 1.8; tags.push('Номер = регион'); }
+
+  // мягкий потолок на накопленные множители
+  if (m > 3000) m = 3000 * Math.pow(m / 3000, 0.7);
+  return { val: roundPrice(MIN * m * (0.85 + rnd() * 0.4)), tags, owner: '' };
+}
+
+// «Подкрутка»: с небольшим шансом выпадает известный номер или номер из спецсерии
+let SPECIAL_CHANCE = 0.0015;
+function genSpecial(){
+  const x = Math.random();
+  const rd = (a, b) => String(a + Math.floor(Math.random() * (b - a + 1))).padStart(3, '0');
+  if (x < 0.4) return parsePlate(PLATE_LIST[Math.floor(Math.random() * PLATE_LIST.length)]);
+  let pool;
+  if (x < 0.65) pool = [SERIES[0]]; else if (x < 0.8) pool = [SERIES[1]]; else if (x < 0.9) pool = [SERIES[2]]; else pool = SERIES.slice(3);
+  const s = pool[Math.floor(Math.random() * pool.length)];
+  const d = rd(s.from || 1, s.to || 999);
+  return { l1: s.l1, d, l2: s.l2, r: s.reg[Math.floor(Math.random() * s.reg.length)] };
+}
+// VALUATION END
+
+/* =========================================================
+   СОСТОЯНИЕ
+   ========================================================= */
+const KEY = 'plates_v1';
+const defaultState = () => ({ money: START, seq: 0, rolls: 0, collection: [], safe: [], last: null, best: null });
+function load(){
+  try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.money === 'number') return Object.assign(defaultState(), s); } catch(e){}
+  return defaultState();
+}
+let S = load();
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+
+const $ = s => document.querySelector(s);
+const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+const rid = p => p.rar || rarityOf(p.val).id;
+const rname = id => RARITIES.find(r => r.id === id).name;
+const find = (arr, id) => arr.findIndex(p => p.id === id);
+
+/* =========================================================
+   РИСУЕМ НОМЕР
+   ========================================================= */
+function plateHTML(p){
+  const ch = s => [...s].map(c => `<span>${c}</span>`).join('');
+  return `<div class="num"><div class="g">${ch(p.l1)}</div><div class="g">${ch(p.d)}</div><div class="g">${ch(p.l2)}</div></div>` +
+         `<div class="reg"><div class="rn${p.r.length > 2 ? ' r3' : ''}">${p.r}</div><div class="rus">RUS<i class="flag"></i></div></div>`;
+}
+function plateEl(p, cls){
+  const el = document.createElement('div');
+  el.className = 'plate ' + (cls || '');
+  el.innerHTML = plateHTML(p);
+  return el;
+}
+
+/* =========================================================
+   РЕНДЕР
+   ========================================================= */
+let shownMoney = S.money;
+function renderMoney(dir){
+  const el = $('#money');
+  const from = shownMoney, to = S.money; shownMoney = to;
+  if (dir) { el.classList.remove('up','down'); void el.offsetWidth; el.classList.add(dir); setTimeout(() => el.classList.remove('up','down'), 600); }
+  const t0 = performance.now();
+  (function step(t){
+    const k = Math.min(1, (t - t0) / 450);
+    el.textContent = fmt(from + (to - from) * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) requestAnimationFrame(step);
+  })(t0);
+}
+function renderBadges(){
+  const bc = $('#bColl'), bs = $('#bSafe');
+  bc.hidden = !S.collection.length; bc.textContent = S.collection.length;
+  bs.hidden = !S.safe.length; bs.textContent = S.safe.length;
+}
+function itemHTML(p, where){
+  const r = rid(p);
+  const acts = where === 'coll'
+    ? `<button class="btn safe" data-act="tosafe" data-id="${p.id}">🔒 В сейф</button><button class="btn sell" data-act="sell" data-id="${p.id}">Продать</button>`
+    : `<button class="btn ghost" data-act="fromsafe" data-id="${p.id}">Достать</button><button class="btn sell" data-act="sell" data-id="${p.id}">Продать</button>`;
+  return `<div class="item rar-${r}"><div class="top">${plateEl(p, 'md').outerHTML}</div>` +
+         `<div class="bot"><div class="val"><small>${rname(r)}</small>${fmt(p.val)}${p.owner ? `<span class="own">⭐ ${p.owner}</span>` : ''}</div>${acts}</div></div>`;
+}
+function renderLists(){
+  const sorted = a => a.slice().sort((x, y) => y.val - x.val);
+  const cl = $('#collList'), sl = $('#safeList');
+  cl.innerHTML = S.collection.length ? sorted(S.collection).map(p => itemHTML(p, 'coll')).join('')
+    : '<div class="empty">Коллекция пуста.<br>Нажимай на экран на вкладке «Играть» — номера появятся здесь.</div>';
+  sl.innerHTML = S.safe.length ? sorted(S.safe).map(p => itemHTML(p, 'safe')).join('')
+    : '<div class="empty">Сейф пуст.<br>Прячь сюда самые красивые номера, чтобы случайно не продать их.</div>';
+  const sum = a => a.reduce((s, p) => s + p.val, 0);
+  $('#collSum').innerHTML = `${S.collection.length} шт.<b>${fmt(sum(S.collection))}</b>`;
+  $('#safeSum').innerHTML = `${S.safe.length} шт.<b>${fmt(sum(S.safe))}</b>`;
+}
+function renderQuick(){
+  const q = $('#quick'), p = S.last;
+  if (!p || spinning) { q.innerHTML = ''; return; }
+  if (find(S.collection, p.id) >= 0) {
+    q.innerHTML = `<button class="btn safe" data-act="tosafe" data-id="${p.id}">🔒 В сейф</button><button class="btn sell" data-act="sell" data-id="${p.id}">Продать за ${fmt(p.val)}</button>`;
+  } else if (find(S.safe, p.id) >= 0) {
+    q.innerHTML = `<div class="status">🔒 Лежит в сейфе</div>`;
+  } else {
+    q.innerHTML = `<div class="status">Продан за ${fmt(p.val)}</div>`;
+  }
+}
+function renderHint(){
+  const h = $('#hint');
+  h.classList.remove('warn');
+  if (locked) { h.textContent = 'Прокрут заблокирован…'; return; }
+  h.innerHTML = `Нажми на экран — прокрут за <b>${fmt(COST)}</b>`;
+}
+function renderPlay(){
+  const wrap = $('#plateWrap');
+  if (!S.last) {
+    wrap.className = 'plate-wrap';
+    wrap.innerHTML = '';
+    wrap.appendChild(plateEl({ l1:'А', d:'777', l2:'ВР', r:'77' }, 'xl empty-plate'));
+    $('#rarBox').innerHTML = ''; $('#price').textContent = ''; $('#tags').innerHTML = ''; $('#owner').textContent = '';
+  } else if (!spinning && !locked) {
+    showResult(S.last, false);
+  }
+  renderQuick(); renderHint();
+}
+function renderAll(dir){ renderMoney(dir); renderBadges(); renderLists(); renderPlay(); }
+
+function showResult(p, animate){
+  const r = rid(p);
+  const wrap = $('#plateWrap');
+  wrap.className = 'plate-wrap rar-' + r + (animate ? ' pop' : '');
+  wrap.innerHTML = '';
+  wrap.appendChild(plateEl(p, 'xl'));
+  $('#rarBox').innerHTML = `<span class="rar-badge ${r}">${rname(r)}</span>`;
+  $('#tags').innerHTML = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+  $('#owner').textContent = p.owner ? '⭐ ' + p.owner : '';
+  const pr = $('#price');
+  if (animate) countUp(pr, p.val, r === 'legendary' ? 1400 : 650); else pr.textContent = fmt(p.val);
+}
+function countUp(el, to, ms){
+  const t0 = performance.now();
+  (function step(t){
+    const k = Math.min(1, (t - t0) / ms);
+    el.textContent = fmt(to * (1 - Math.pow(1 - k, 3)));
+    if (k < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
+/* =========================================================
+   ПРОКРУТ
+   ========================================================= */
+let spinning = false, locked = false;
+function genPlate(){
+  if (Math.random() < SPECIAL_CHANCE) return genSpecial();
+  let d; do { d = String(Math.floor(Math.random() * 1000)).padStart(3, '0'); } while (d === '000');
+  const pick = () => LET[Math.floor(Math.random() * LET.length)];
+  return { l1: pick(), d, l2: pick() + pick(), r: REGIONS[Math.floor(Math.random() * REGIONS.length)] };
+}
+
+function roll(forced){
+  if (spinning || locked) return;
+  if (S.money < COST) { noFunds(); return; }
+  spinning = true;
+  S.money -= COST;
+  const p = forced || genPlate();
+  const v = valuate(p);
+  p.val = forced && forced.val ? forced.val : v.val;
+  p.tags = v.tags; p.owner = v.owner || ''; p.rar = rarityOf(p.val).id;
+  p.id = ++S.seq;
+  S.collection.push(p); S.last = p; S.rolls++;
+  if (!S.best || p.val > S.best.val) S.best = { val: p.val, l1: p.l1, d: p.d, l2: p.l2, r: p.r };
+  save();
+  renderMoney('down'); renderBadges(); renderLists(); renderQuick();
+  $('#rarBox').innerHTML = ''; $('#price').textContent = ''; $('#tags').innerHTML = ''; $('#owner').textContent = '';
+  $('#hint').textContent = '';
+
+  const wrap = $('#plateWrap');
+  wrap.className = 'plate-wrap';
+  wrap.innerHTML = '';
+  const el = plateEl(p, 'xl spinning');
+  wrap.appendChild(el);
+  const spans = el.querySelectorAll('.num span');
+  const rn = el.querySelector('.rn');
+  const lockAt = [250, 350, 450, 550, 650, 750, 880];
+  const hold = p.rar === 'legendary';   // у легендарки символы не фиксируем: интрига до анимации
+  const endAt = hold ? 1500 : lockAt[6] + 60;
+  const finals = [p.l1, p.d[0], p.d[1], p.d[2], p.l2[0], p.l2[1]];
+  const pools = [LET, '0123456789', '0123456789', '0123456789', LET, LET];
+  const t0 = performance.now(); let lastSwap = 0;
+  (function frame(now){
+    const t = now - t0;
+    if (now - lastSwap > 45) {
+      lastSwap = now;
+      spans.forEach((s, i) => { s.textContent = (!hold && t >= lockAt[i]) ? finals[i] : pools[i][Math.floor(Math.random() * pools[i].length)]; });
+      rn.textContent = (!hold && t >= lockAt[6]) ? p.r : REGIONS[Math.floor(Math.random() * REGIONS.length)];
+    }
+    if (t < endAt) { requestAnimationFrame(frame); return; }
+    if (!hold) { spans.forEach((s, i) => s.textContent = finals[i]); rn.textContent = p.r; }
+    spinning = false;
+    reveal(p);
+  })(t0);
+}
+
+function reveal(p){
+  if (p.rar === 'legendary') { legendary(p); return; }
+  showResult(p, true);
+  renderQuick();
+  if (p.rar === 'epic') vibrate([25]);
+  renderHint();
+}
+
+function noFunds(){
+  const total = S.money + S.collection.reduce((s, p) => s + p.val, 0) + S.safe.reduce((s, p) => s + p.val, 0);
+  if (total < COST) {
+    modal('Деньги закончились', 'У тебя не осталось ни денег, ни номеров на новый прокрут. Начать заново со стартовым балансом ' + fmt(START) + '?',
+      [{ label: 'Начать заново', cls: 'sell', fn: resetGame }]);
+    return;
+  }
+  const h = $('#hint'); h.classList.add('warn');
+  h.textContent = 'Не хватает денег на прокрут. Продай номера из коллекции.';
+  if (S.collection.length) tab('coll');
+  else modal('Не хватает денег', 'Достань и продай что-нибудь из сейфа, чтобы получить ' + fmt(COST) + ' на прокрут.', [{ label: 'В сейф', cls: 'safe', fn: () => tab('safe') }, { label: 'Закрыть', cls: 'ghost' }]);
+}
+
+/* =========================================================
+   ЛЕГЕНДАРНЫЙ НОМЕР: блокировка на 5 секунд + частицы
+   ========================================================= */
+let lockTimer = null, ambTimer = null, secTimer = null;
+function legendary(p){
+  locked = true; renderHint();
+  clearInterval(ambTimer); clearInterval(secTimer); clearTimeout(lockTimer);
+  const lk = $('#lock');
+  const holder = $('#lkPlate'); holder.innerHTML = '';
+  const pe = plateEl(p, 'lg'); holder.appendChild(pe);
+  // пустая табличка: символы скрыты, остаётся только RUS и флаг
+  const targets = [...pe.querySelectorAll('.num span'), pe.querySelector('.rn')];
+  targets.forEach(t => t.classList.add('hide'));
+  const hides = ['#lkTitle', '#lkOwner', '#lkVal', '#lkBarWrap', '#lkSub'];
+  hides.forEach(q => { const e = $(q); e.style.transition = 'none'; e.classList.add('lk-hide'); void e.offsetWidth; e.style.transition = ''; });
+  $('#lkVal').textContent = '';
+  const ow = $('#lkOwner'); ow.textContent = p.owner ? '⭐ ' + p.owner : ''; ow.style.display = p.owner ? '' : 'none';
+  const bar = $('#lkBar'); bar.classList.remove('run'); bar.style.transform = 'scaleX(1)';
+  $('#lkSec').textContent = Math.ceil(LOCK_MS / 1000);
+  lk.classList.add('on');
+  $('#app').style.visibility = 'hidden';   // чтобы основной экран не просвечивал
+
+  let i = 0;
+  const STEP = 360;
+  function next(){
+    if (i < targets.length) {
+      const t = targets[i++];
+      t.classList.remove('hide'); t.classList.add('in');
+      const r = t.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, 14, true);
+      vibrate(14);
+      setTimeout(next, STEP);
+    } else setTimeout(finale, 450);
+  }
+  setTimeout(next, 750);
+
+  function finale(){
+    hides.forEach(q => $(q).classList.remove('lk-hide'));
+    countUp($('#lkVal'), p.val, 1600);
+    const fl = $('#flash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go');
+    vibrate([40, 60, 40, 60, 120]);
+    bar.style.transform = ''; void bar.offsetWidth; bar.classList.add('run');
+    const r = holder.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    burst(cx, cy, 170);
+    setTimeout(() => burst(cx, cy, 110), 450);
+    setTimeout(() => burst(innerWidth * .2, innerHeight * .35, 60), 900);
+    setTimeout(() => burst(innerWidth * .8, innerHeight * .35, 60), 1200);
+    ambTimer = setInterval(() => burst(cx + (Math.random() - .5) * r.width, cy + (Math.random() - .5) * 120, 5, true), 90);
+    const t0 = Date.now();
+    secTimer = setInterval(() => { $('#lkSec').textContent = Math.max(1, Math.ceil((LOCK_MS - (Date.now() - t0)) / 1000)); }, 200);
+    lockTimer = setTimeout(() => {
+      clearInterval(ambTimer); clearInterval(secTimer);
+      lk.classList.remove('on'); locked = false; $('#app').style.visibility = '';
+      showResult(p, false); renderQuick(); renderHint();
+    }, LOCK_MS);
+  }
+}
+
+/* ---- мягкие частицы ---- */
+const cv = $('#fx'), cx2 = cv.getContext('2d');
+let DPR = 1;
+function fit(){ DPR = Math.min(2, devicePixelRatio || 1); cv.width = innerWidth * DPR; cv.height = innerHeight * DPR; }
+addEventListener('resize', fit); fit();
+const PASTELS = ['#ffd1e6','#dccbff','#c9f2e2','#ffe8c4','#c6e4ff','#fff6c4','#ffc8d6','#e6d2ff'];
+const sprites = PASTELS.map(c => {
+  const s = document.createElement('canvas'); s.width = s.height = 64;
+  const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, '#ffffff'); gr.addColorStop(.25, c); gr.addColorStop(1, c + '00');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return s;
+});
+let parts = [], rings = [], raf = 0, lastT = 0;
+function burst(x, y, n, soft){
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const sp = soft ? 30 + Math.random() * 90 : 70 + Math.random() * 420;
+    parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - (soft ? 40 : 30),
+      s: (soft ? 10 : 12) + Math.random() * 26, sp: sprites[Math.floor(Math.random() * sprites.length)],
+      life: 0, max: (soft ? 1.4 : 2.2) + Math.random() * 2.2, ph: Math.random() * 6.28 });
+  }
+  if (!soft) rings.push({ x, y, life: 0, max: 1.1, col: PASTELS[Math.floor(Math.random() * PASTELS.length)] });
+  if (!raf) { lastT = performance.now(); raf = requestAnimationFrame(loop); }
+}
+function loop(t){
+  const dt = Math.min(.05, (t - lastT) / 1000); lastT = t;
+  cx2.setTransform(DPR, 0, 0, DPR, 0, 0);
+  cx2.clearRect(0, 0, innerWidth, innerHeight);
+  cx2.globalCompositeOperation = 'lighter';
+  for (const r of rings) {
+    r.life += dt; const k = r.life / r.max; if (k >= 1) continue;
+    cx2.globalAlpha = (1 - k) * .55; cx2.strokeStyle = r.col; cx2.lineWidth = 10 * (1 - k) + 2;
+    cx2.beginPath(); cx2.arc(r.x, r.y, 20 + k * Math.min(innerWidth, 520) * .75, 0, 6.2832); cx2.stroke();
+  }
+  rings = rings.filter(r => r.life < r.max);
+  for (const p of parts) {
+    p.life += dt; const k = p.life / p.max; if (k >= 1) continue;
+    const drag = Math.pow(.18, dt);
+    p.vx *= drag; p.vy = p.vy * drag + 38 * dt; // мягкое оседание
+    p.x += (p.vx + Math.sin(p.life * 3 + p.ph) * 14) * dt; p.y += p.vy * dt;
+    const tw = .75 + .25 * Math.sin(p.life * 9 + p.ph);
+    cx2.globalAlpha = Math.pow(1 - k, 1.4) * tw * .72;
+    const s = p.s * (1 - k * .35);
+    cx2.drawImage(p.sp, p.x - s / 2, p.y - s / 2, s, s);
+  }
+  parts = parts.filter(p => p.life < p.max);
+  cx2.globalAlpha = 1; cx2.globalCompositeOperation = 'source-over';
+  if (parts.length || rings.length) raf = requestAnimationFrame(loop);
+  else { raf = 0; cx2.clearRect(0, 0, innerWidth, innerHeight); }
+}
+function vibrate(p){ try { navigator.vibrate && navigator.vibrate(p); } catch(e){} }
+
+/* =========================================================
+   ДЕЙСТВИЯ: продать / сейф
+   ========================================================= */
+function sell(id){
+  let i = find(S.collection, id), from = S.collection;
+  if (i < 0) { i = find(S.safe, id); from = S.safe; }
+  if (i < 0) return;
+  const p = from[i];
+  const doIt = () => {
+    const j = from.indexOf(p); if (j < 0) return;
+    from.splice(j, 1); S.money += p.val; save();
+    toast('+ ' + fmt(p.val)); renderAll('up');
+  };
+  if (from === S.safe) modal('Продать номер из сейфа?', `${p.l1}${p.d}${p.l2} ${p.r} — ${fmt(p.val)}`, [{ label: 'Продать', cls: 'sell', fn: doIt }, { label: 'Отмена', cls: 'ghost' }]);
+  else doIt();
+}
+function toSafe(id){
+  const i = find(S.collection, id); if (i < 0) return;
+  S.safe.push(S.collection.splice(i, 1)[0]); save(); toast('🔒 Номер в сейфе'); renderAll();
+}
+function fromSafe(id){
+  const i = find(S.safe, id); if (i < 0) return;
+  S.collection.push(S.safe.splice(i, 1)[0]); save(); renderAll();
+}
+function bulk(kind){
+  const list = S.collection.filter(p => kind === 'all' || rid(p) === 'common');
+  if (!list.length) { toast('Нечего продавать'); return; }
+  const sum = list.reduce((s, p) => s + p.val, 0);
+  modal(kind === 'all' ? 'Продать всю коллекцию?' : 'Продать все обычные?',
+    `${list.length} шт. на сумму ${fmt(sum)}\nНомера из сейфа не затрагиваются.`,
+    [{ label: 'Продать', cls: 'sell', fn: () => {
+      const ids = new Set(list.map(p => p.id));
+      S.collection = S.collection.filter(p => !ids.has(p.id)); S.money += sum; save();
+      toast('+ ' + fmt(sum)); renderAll('up');
+    } }, { label: 'Отмена', cls: 'ghost' }]);
+}
+function resetGame(){ S = defaultState(); shownMoney = S.money; save(); spinning = false; renderAll(); tab('play'); }
+
+/* =========================================================
+   UI
+   ========================================================= */
+function tab(name){
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+}
+let toastT;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 1400); }
+function modal(title, text, buttons){
+  const box = $('#mbox');
+  box.innerHTML = `<h3>${title}</h3><p>${text}</p><div class="row"></div>`;
+  const row = box.querySelector('.row');
+  buttons.forEach(b => {
+    const el = document.createElement('button'); el.className = 'btn ' + (b.cls || 'ghost'); el.textContent = b.label;
+    el.onclick = () => { $('#modal').classList.remove('on'); b.fn && b.fn(); };
+    row.appendChild(el);
+  });
+  $('#modal').classList.add('on');
+}
+function menu(){
+  const b = S.best;
+  const best = b ? `Самый дорогой номер: ${b.l1}${b.d}${b.l2} ${b.r} — ${fmt(b.val)}` : 'Пока нет данных.';
+  modal('Статистика', `Прокрутов: ${S.rolls}\n${best}\n\nИзвестные номера и спецсерии взяты из открытых источников. Игра неофициальная и сделана для развлечения.`, [
+    { label: 'Начать заново', cls: 'danger', fn: () => modal('Начать заново?', 'Весь прогресс, коллекция и сейф будут стёрты.', [{ label: 'Да, стереть', cls: 'danger', fn: resetGame }, { label: 'Отмена', cls: 'ghost' }]) },
+    { label: 'Закрыть', cls: 'ghost' }]);
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-act],[data-bulk],#menuBtn');
+  if (t) {
+    if (t.dataset.tab) return tab(t.dataset.tab);
+    if (t.dataset.bulk) return bulk(t.dataset.bulk);
+    if (t.id === 'menuBtn') return menu();
+    const id = +t.dataset.id;
+    if (t.dataset.act === 'sell') return sell(id);
+    if (t.dataset.act === 'tosafe') return toSafe(id);
+    if (t.dataset.act === 'fromsafe') return fromSafe(id);
+  }
+  if (e.target.closest('#screen-play') && !e.target.closest('button')) roll();
+});
+
+renderAll();
+window.__back = function(){
+  if ($('#modal').classList.contains('on')) { $('#modal').classList.remove('on'); return true; }
+  if (locked) return true;
+  const act = document.querySelector('.screen.active');
+  if (act && act.id !== 'screen-play') { tab('play'); return true; }
+  return false;
+};
+if (location.hash === '#lucky') SPECIAL_CHANCE = 0.5;   // тест: известные номера выпадают часто
+window.__dbg = { get S(){ return S; }, roll, valuate, rarityOf, legendary: () => locked };
+</script>
+</body>
+</html>
