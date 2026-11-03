@@ -194,8 +194,19 @@ public class MainActivity extends Activity {
     private class Bridge {
         @JavascriptInterface
         public String getCarsText() {
+            return readFile("my_cars.txt");
+        }
+
+        // читать и писать можно только эти три файла в папке PlatesGame
+        private boolean allowed(String name) {
+            return "my_cars.txt".equals(name) || "give.txt".equals(name) || "save.txt".equals(name);
+        }
+
+        @JavascriptInterface
+        public String readFile(String name) {
+            if (!allowed(name)) return "";
             try {
-                File f = new File(dataDir(), "my_cars.txt");
+                File f = new File(dataDir(), name);
                 if (!f.isFile()) return "";
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
                 try (InputStream in = new FileInputStream(f)) {
@@ -204,10 +215,25 @@ public class MainActivity extends Activity {
                     while ((n = in.read(buf)) > 0) bos.write(buf, 0, n);
                 }
                 String text = new String(bos.toByteArray(), StandardCharsets.UTF_8);
-                if (text.startsWith("﻿")) text = text.substring(1);
+                if (text.startsWith("\uFEFF")) text = text.substring(1);
                 return text;
             } catch (IOException e) {
                 return "";
+            }
+        }
+
+        @JavascriptInterface
+        public boolean writeFile(String name, String text) {
+            if (!allowed(name)) return false;
+            try {
+                File dir = dataDir();
+                if (!dir.exists()) dir.mkdirs();
+                try (FileOutputStream out = new FileOutputStream(new File(dir, name))) {
+                    out.write(text.getBytes(StandardCharsets.UTF_8));
+                }
+                return true;
+            } catch (IOException e) {
+                return false;
             }
         }
 

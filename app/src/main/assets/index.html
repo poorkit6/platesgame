@@ -395,13 +395,14 @@ function genSpecial(){
    СОСТОЯНИЕ
    ========================================================= */
 const KEY = 'plates_v1';
-const defaultState = () => ({ money: START, seq: 0, rolls: 0, collection: [], safe: [], cars: [], last: null, best: null });
+const defaultState = () => ({ money: START, seq: 0, rolls: 0, collection: [], safe: [], cars: [], xcars: [], xseq: 0, last: null, best: null });
 function load(){
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.money === 'number') return Object.assign(defaultState(), s); } catch(e){}
   return defaultState();
 }
 let S = load();
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+S.cars = S.cars || []; S.xcars = S.xcars || []; S.xseq = S.xseq || 0;
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} if (typeof scheduleExport === 'function') scheduleExport(); }
 
 const $ = s => document.querySelector(s);
 const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
@@ -751,6 +752,12 @@ const BASE_CARS = window.CARS || [];
 const SALON_ALIAS = [['низк', 'low'], ['low', 'low'], ['средн', 'mid'], ['mid', 'mid'], ['высок', 'high'], ['high', 'high'],
                      ['премиум', 'premium'], ['premium', 'premium'], ['эксклюзив', 'exclusive'], ['exclusive', 'exclusive']];
 let userCarErrors = 0;
+function nameImgs(name, file){
+  const enc = encodeURIComponent, imgs = [];
+  if (file) imgs.push('cars/' + enc(file));
+  ['jpg', 'jpeg', 'png', 'webp'].forEach(e => imgs.push('cars/' + enc(name) + '.' + e));
+  return imgs;
+}
 function parseUserCars(text){
   const out = [];
   String(text || '').split(/\r?\n/).forEach(line => {
@@ -762,11 +769,7 @@ function parseUserCars(text){
     const price = parseInt((p[1] || '').replace(/[^0-9]/g, ''), 10);
     const name = p[2];
     if (!hit || !(price > 0) || !name) { userCarErrors++; return; }
-    const enc = encodeURIComponent;
-    const imgs = [];
-    if (p[3]) imgs.push('cars/' + enc(p[3]));
-    ['jpg', 'jpeg', 'png', 'webp'].forEach(e => imgs.push('cars/' + enc(name) + '.' + e));
-    out.push({ id: 'u:' + name, salon: hit[1], name, price, imgs });
+    out.push({ id: 'u:' + name, salon: hit[1], name, price, imgs: nameImgs(name, p[3]) });
   });
   return out;
 }
@@ -784,7 +787,7 @@ function carImg(c){
   if (c.imgs) list = c.imgs.slice();
   else {
     if (c.img) list.push(c.img);
-    ['jpg', 'jpeg', 'png', 'webp'].forEach(e => list.push('cars/' + c.id + '.' + e));
+    ['jpg', 'jpeg', 'png', 'webp'].forEach(e => list.push('cars/' + (c.imgId || c.id) + '.' + e));
   }
   return `<img src="${esc(list[0])}" data-rest="${esc(list.slice(1).join('|'))}" alt="" onerror="carImgErr(this)">`;
 }
@@ -801,30 +804,59 @@ function renderCarsInfo(){
   let access = false, folder = '';
   try { access = BRIDGE.hasAccess(); folder = BRIDGE.getFolder(); } catch (e) {}
   ab.hidden = access;
-  info.innerHTML = `📁 Папка: <b>${esc(folder)}</b><br>Своих машин: <b>${USER_CARS.length}</b>` + (userCarErrors ? ` · строк с ошибкой: <b>${userCarErrors}</b>` : '') +
+  info.innerHTML = `📁 Папка: <b>${esc(folder)}</b><br>Своих машин: <b>${USER_CARS.length}</b> · файлы: my_cars.txt, give.txt, save.txt` + (userCarErrors ? ` · строк с ошибкой: <b>${userCarErrors}</b>` : '') +
     (access ? '' : '<br>Без доступа к файлам папка спрятана в данных приложения. Нажмите «Доступ к файлам».');
+}
+function cardHTML(c, own, btn){
+  return `<div class="car${own ? ' owned' : ''}"><div class="pic">${carImg(c)}</div><div class="info"><div class="nm">${esc(c.name)}<span class="pr">${fmt(c.price)}</span></div>${btn}</div></div>`;
+}
+const sellBtn = (act, id, price) => `<button class="btn ghost" data-act="${act}" data-cid="${esc(id)}">Продать<br><small>${fmt(price * SELL_RATE)}</small></button>`;
+// гараж: машины из автосалона + выданные через give.txt
+function garageItems(){
+  const out = [];
+  S.cars.forEach(id => { const c = CARS.find(x => x.id === id); if (c) out.push({ c, price: c.price, btn: sellBtn('sellcar', id, c.price) }); });
+  S.xcars.forEach(x => {
+    const cat = x.cat ? CARS.find(c => c.id === x.cat) : null;
+    const c = cat ? Object.assign({}, cat, { id: x.id, imgId: cat.id, name: x.name, price: x.price }) : { id: x.id, name: x.name, price: x.price, imgs: nameImgs(x.name) };
+    out.push({ c, price: x.price, btn: sellBtn('sellx', x.id, x.price) });
+  });
+  return out.sort((a, b) => b.price - a.price);
 }
 function renderCars(){
   renderCarsInfo();
   const chips = $('#salons'), list = $('#carList');
   if (!chips || !list) return;
   if (!SALONS.length) { chips.innerHTML = ''; list.innerHTML = '<div class="empty">Файл cars.js не загрузился или в нём ошибка (проверьте запятые и кавычки).</div>'; return; }
-  chips.innerHTML = SALONS.map(s => {
-    const all = CARS.filter(c => c.salon === s.id), own = all.filter(c => S.cars.includes(c.id)).length;
-    return `<button class="chip${s.id === curSalon ? ' active' : ''}" style="--sc:${s.color}" data-salon="${s.id}">${esc(s.name)} <small>${own}/${all.length}</small></button>`;
-  }).join('');
-  const sal = SALONS.find(s => s.id === curSalon) || SALONS[0];
+  const gar = garageItems();
+  chips.innerHTML = SALONS.map(sl => {
+    const all = CARS.filter(c => c.salon === sl.id), own = all.filter(c => S.cars.includes(c.id)).length;
+    return `<button class="chip${sl.id === curSalon ? ' active' : ''}" style="--sc:${sl.color}" data-salon="${sl.id}">${esc(sl.name)} <small>${own}/${all.length}</small></button>`;
+  }).join('') + `<button class="chip${curSalon === 'garage' ? ' active' : ''}" style="--sc:#c9d1ff" data-salon="garage">🚗 Гараж <small>${gar.length}</small></button>`;
   const top = list.scrollTop;
-  list.style.setProperty('--sc', sal.color);
-  const cars = CARS.filter(c => c.salon === sal.id).sort((a, b) => a.price - b.price);
-  list.innerHTML = cars.length ? cars.map(c => {
-    const own = S.cars.includes(c.id);
-    const btn = own
-      ? `<button class="btn ghost" data-act="sellcar" data-cid="${esc(c.id)}">Продать<br><small>${fmt(c.price * SELL_RATE)}</small></button>`
-      : `<button class="btn ${S.money >= c.price ? 'sell' : 'ghost'}" data-act="buycar" data-cid="${esc(c.id)}">Купить</button>`;
-    return `<div class="car${own ? ' owned' : ''}"><div class="pic">${carImg(c)}</div><div class="info"><div class="nm">${esc(c.name)}<span class="pr">${fmt(c.price)}</span></div>${btn}</div></div>`;
-  }).join('') : '<div class="empty">В этом салоне пока нет машин.<br>Добавь их в файл cars.js.</div>';
+  if (curSalon === 'garage') {
+    list.style.setProperty('--sc', '#c9d1ff');
+    list.innerHTML = gar.length ? gar.map(g => cardHTML(g.c, false, g.btn)).join('') : '<div class="empty">Гараж пуст.<br>Купите машину в автосалоне.</div>';
+  } else {
+    const sal = SALONS.find(sl => sl.id === curSalon) || SALONS[0];
+    list.style.setProperty('--sc', sal.color);
+    const cars = CARS.filter(c => c.salon === sal.id).sort((a, b) => a.price - b.price);
+    list.innerHTML = cars.length ? cars.map(c => {
+      const own = S.cars.includes(c.id);
+      const btn = own ? sellBtn('sellcar', c.id, c.price)
+        : `<button class="btn ${S.money >= c.price ? 'sell' : 'ghost'}" data-act="buycar" data-cid="${esc(c.id)}">Купить</button>`;
+      return cardHTML(c, own, btn);
+    }).join('') : '<div class="empty">В этом салоне пока нет машин.<br>Добавьте их в файл my_cars.txt или cars.js.</div>';
+  }
   list.scrollTop = top;
+}
+function sellX(id){
+  const i = S.xcars.findIndex(x => x.id === id); if (i < 0) return;
+  const x = S.xcars[i], get = Math.round(x.price * SELL_RATE);
+  modal('Продать машину?', `${x.name}\nВы получите ${fmt(get)} (${Math.round(SELL_RATE * 100)}% цены)`, [{ label: 'Продать', cls: 'sell', fn: () => {
+    const j = S.xcars.findIndex(y => y.id === id); if (j < 0) return;
+    S.xcars.splice(j, 1); S.money += get; save();
+    toast('+ ' + fmt(get)); renderAll('up');
+  } }, { label: 'Отмена', cls: 'ghost' }]);
 }
 function buyCar(id){
   const c = CARS.find(x => x.id === id); if (!c || S.cars.includes(id)) return;
@@ -843,6 +875,152 @@ function sellCar(id){
     S.cars.splice(i, 1); S.money += get; save();
     toast('+ ' + fmt(get)); renderAll('up');
   } }, { label: 'Отмена', cls: 'ghost' }]);
+}
+
+/* =========================================================
+   ВЫДАЧА / УДАЛЕНИЕ через файл give.txt и просмотр состояния в save.txt (только в приложении)
+   ========================================================= */
+const GIVE_TEMPLATE = `# ВЫДАЧА И УДАЛЕНИЕ
+# Игра читает этот файл при запуске и по кнопке «Обновить список» (вкладка Автосалон).
+# Обработанные строки стираются, чтобы не выдать дважды.
+#
+# ВЫДАТЬ НОМЕР:    номер | А777АА77 | сейф | 50 000 000
+#                  (место «коллекция» или «сейф» и цена не обязательны:
+#                   по умолчанию коллекция и цена по правилам игры)
+# ВЫДАТЬ МАШИНУ:   машина | Bugatti Divo                (из автосалона, обычная цена)
+#                  машина | Моя тачка | 3 000 000       (любая своя, цену нужно вписать)
+# УДАЛИТЬ НОМЕР:   удалить номер | А777АА77             (или: все / коллекция / сейф)
+# УДАЛИТЬ МАШИНУ:  удалить машину | Bugatti Divo        (или: все)
+# БАЛАНС:          баланс | +5 000 000    добавить
+#                  баланс | -1 000        убавить
+#                  баланс | 10 000 000    установить ровно столько
+#
+# Строки, которые начинаются с #, игра пропускает. Свои строки пишите ниже:
+`;
+const parsePrice = t => { const d = String(t || '').replace(/[^0-9]/g, ''); return d ? parseInt(d, 10) : null; };
+function plateFromString(str){
+  const t = cyr(String(str || '').toUpperCase().replace(/[\s_\-]/g, ''));
+  const m = /^([A-ZА-ЯЁ])(\d{3})([A-ZА-ЯЁ]{2})(\d{2,3})$/.exec(t);
+  return m ? { l1: m[1], d: m[2], l2: m[3], r: m[4] } : null;
+}
+const plateKey = p => p.l1 + p.d + p.l2 + p.r;
+function applyGiveLine(line){
+  const f = line.split('|').map(x => x.trim());
+  const cmd = (f[0] || '').toLowerCase();
+  const err = msg => ({ err: msg });
+  if (cmd.startsWith('удал')) {
+    const target = (f[1] || '').toLowerCase();
+    if (!target) return err('не указано, что удалить');
+    if (cmd.includes('номер')) {
+      let n = 0;
+      const keep = (arr, drop) => arr.filter(p => { const d = drop(p); if (d) n++; return !d; });
+      if (target.startsWith('все') || target.startsWith('всё')) { n = S.collection.length + S.safe.length; S.collection = []; S.safe = []; }
+      else if (target.startsWith('колл')) { n = S.collection.length; S.collection = []; }
+      else if (target.startsWith('сейф')) { n = S.safe.length; S.safe = []; }
+      else {
+        const p = plateFromString(f[1]); if (!p) return err('не похоже на номер (пример А777АА77)');
+        const k = plateKey(p), hit = q => plateKey(q) === k;
+        S.collection = keep(S.collection, hit); S.safe = keep(S.safe, hit);
+      }
+      if (S.last && !S.collection.some(p => p.id === S.last.id) && !S.safe.some(p => p.id === S.last.id)) S.last = null;
+      return n ? { removed: n } : err('такого номера нет');
+    }
+    if (cmd.includes('машин')) {
+      let n = 0;
+      if (target.startsWith('все') || target.startsWith('всё')) { n = S.cars.length + S.xcars.length; S.cars = []; S.xcars = []; }
+      else {
+        const q = target;
+        const ids = CARS.filter(c => c.id.toLowerCase() === q || c.name.toLowerCase() === q).map(c => c.id);
+        const before = S.cars.length + S.xcars.length;
+        S.cars = S.cars.filter(id => !ids.includes(id));
+        S.xcars = S.xcars.filter(x => x.name.toLowerCase() !== q);
+        n = before - S.cars.length - S.xcars.length;
+      }
+      return n ? { removed: n } : err('такой машины в гараже нет');
+    }
+    return err('после «удалить» напишите «номер» или «машину»');
+  }
+  if (cmd.startsWith('номер')) {
+    const p = plateFromString(f[1]); if (!p) return err('не похоже на номер (пример А777АА77)');
+    let dest = 'coll', price = null;
+    for (const x of f.slice(2)) {
+      const low = x.toLowerCase();
+      if (!x) continue;
+      if (low.startsWith('сейф')) dest = 'safe';
+      else if (low.startsWith('колл')) dest = 'coll';
+      else if (/\d/.test(x)) price = parsePrice(x);
+      else return err('непонятное поле «' + x + '»');
+    }
+    const v = valuate(p);
+    const val = price != null ? price : v.val;
+    if (!(val > 0)) return err('цена должна быть больше нуля');
+    const plate = Object.assign({}, p, { id: ++S.seq, val, tags: v.tags, owner: v.owner || '', rar: rarityOf(val).id });
+    (dest === 'safe' ? S.safe : S.collection).push(plate);
+    return { given: 1 };
+  }
+  if (cmd.startsWith('машин')) {
+    const name = f[1]; if (!name) return err('не указано название машины');
+    const price = parsePrice(f[2]), q = name.toLowerCase();
+    const cat = CARS.find(c => c.id.toLowerCase() === q || c.name.toLowerCase() === q);
+    if (cat && price == null) { if (!S.cars.includes(cat.id)) S.cars.push(cat.id); return { given: 1 }; }
+    if (!cat && price == null) return err('такой машины нет в автосалоне, впишите цену третьим полем');
+    if (!(price > 0)) return err('цена должна быть больше нуля');
+    S.xcars.push({ id: 'x' + (++S.xseq), name: cat ? cat.name : name, price, cat: cat ? cat.id : '' });
+    return { given: 1 };
+  }
+  if (cmd.startsWith('баланс') || cmd.startsWith('деньг')) {
+    const raw = (f[1] || '').trim(), n = parsePrice(raw);
+    if (n == null) return err('не указана сумма');
+    if (raw[0] === '+') S.money += n; else if (raw[0] === '-' || raw[0] === '−') S.money = Math.max(0, S.money - n); else S.money = n;
+    return { given: 1 };
+  }
+  return err('неизвестная команда «' + f[0] + '»');
+}
+function processGive(){
+  if (!BRIDGE) return;
+  let text = '';
+  try { text = BRIDGE.readFile('give.txt') || ''; } catch (e) { return; }
+  if (!text.trim()) { try { BRIDGE.writeFile('give.txt', GIVE_TEMPLATE); } catch (e) {} return; }
+  const lines = text.split(/\r?\n/).filter(l => l.trim() && l.trim()[0] !== '#');
+  if (!lines.length) return;
+  let given = 0, removed = 0; const errs = [];
+  lines.forEach(l => {
+    let r; try { r = applyGiveLine(l); } catch (e) { r = { err: 'сбой разбора' }; }
+    if (r.err) errs.push(`# ОШИБКА (${r.err}): ${l.trim()}`); else { given += r.given || 0; removed += r.removed || 0; }
+  });
+  save();
+  try { BRIDGE.writeFile('give.txt', GIVE_TEMPLATE + `# Последний результат: выдано ${given}, удалено ${removed}, ошибок ${errs.length}\n` + errs.join('\n') + (errs.length ? '\n' : '')); } catch (e) {}
+  giveReport = `Выдано ${given}, удалено ${removed}` + (errs.length ? `, ошибок ${errs.length} (см. give.txt)` : '');
+}
+let giveReport = '';
+
+function snapshotText(){
+  const pl = p => `${p.l1}${p.d}${p.l2}${p.r} | ${fmt(p.val)} | ${rname(rid(p))}${p.owner ? ' | ' + p.owner : ''}`;
+  const sum = a => a.reduce((t, p) => t + p.val, 0);
+  const gar = garageItems();
+  return [
+    '# СОХРАНЕНИЕ ИГРЫ (только для просмотра). Файл обновляется автоматически.',
+    '# Чтобы что-то выдать или удалить, пишите в give.txt.',
+    '',
+    `Баланс: ${fmt(S.money)}`,
+    `Прокрутов: ${S.rolls}`,
+    '',
+    `[КОЛЛЕКЦИЯ] ${S.collection.length} шт., на ${fmt(sum(S.collection))}`,
+    ...S.collection.slice().sort((a, b) => b.val - a.val).map(pl),
+    '',
+    `[СЕЙФ] ${S.safe.length} шт., на ${fmt(sum(S.safe))}`,
+    ...S.safe.slice().sort((a, b) => b.val - a.val).map(pl),
+    '',
+    `[ГАРАЖ] ${gar.length} шт., на ${fmt(gar.reduce((t, g) => t + g.price, 0))}`,
+    ...gar.map(g => `${g.c.name} | ${fmt(g.price)}`),
+    ''
+  ].join('\n');
+}
+let exportT = null;
+function scheduleExport(){
+  if (!BRIDGE) return;
+  clearTimeout(exportT);
+  exportT = setTimeout(() => { try { BRIDGE.writeFile('save.txt', snapshotText()); } catch (e) {} }, 500);
 }
 
 function tab(name){
@@ -879,6 +1057,7 @@ document.addEventListener('click', e => {
     if (t.dataset.salon) { curSalon = t.dataset.salon; $('#carList').scrollTop = 0; return renderCars(); }
     if (t.dataset.act === 'buycar') return buyCar(t.dataset.cid);
     if (t.dataset.act === 'sellcar') return sellCar(t.dataset.cid);
+    if (t.dataset.act === 'sellx') return sellX(t.dataset.cid);
     if (t.dataset.tab) return tab(t.dataset.tab);
     if (t.dataset.bulk) return bulk(t.dataset.bulk);
     if (t.id === 'menuBtn') return menu();
@@ -890,7 +1069,10 @@ document.addEventListener('click', e => {
   if (e.target.closest('#screen-play') && !e.target.closest('button')) roll();
 });
 
+processGive();
 renderAll();
+if (BRIDGE) scheduleExport();
+if (giveReport) setTimeout(() => toast(giveReport), 600);
 window.__back = function(){
   if ($('#modal').classList.contains('on')) { $('#modal').classList.remove('on'); return true; }
   if (locked) return true;
