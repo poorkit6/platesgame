@@ -161,6 +161,11 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 .car .pr{display:block;margin-top:3px;font-size:16px;color:var(--gold);font-variant-numeric:tabular-nums}
 .car .btn{padding:11px 16px;font-size:14px;text-align:center;line-height:1.2}
 .car .btn small{font-weight:700;opacity:.8}
+.carbar{padding:0 0 8px}
+.carbar .btn{padding:8px 12px;font-size:12px}
+.carinfo{flex-basis:100%;color:var(--dim);font-size:11px;line-height:1.35;word-break:break-all}
+.carinfo:empty{display:none}
+.carinfo b{color:var(--text)}
 </style>
 
 </head>
@@ -199,6 +204,11 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
     </section>
     <section id="screen-cars" class="screen list-screen">
       <div class="salons" id="salons"></div>
+      <div class="toolbar carbar">
+        <button class="btn ghost" data-reload="1">⟳ Обновить список</button>
+        <button class="btn ghost" data-access="1" id="accessBtn" hidden>🔑 Доступ к файлам</button>
+        <div class="carinfo" id="carsInfo"></div>
+      </div>
       <div class="list" id="carList"></div>
     </section>
   </main>
@@ -736,16 +746,46 @@ function resetGame(){ S = defaultState(); shownMoney = S.money; save(); spinning
 /* =========================================================
    АВТОСАЛОН (данные в cars.js, картинки в папке cars/)
    ========================================================= */
-const CARS = window.CARS || [];
+const BASE_CARS = window.CARS || [];
+// ---- свои машины из файла my_cars.txt (только в приложении на телефоне) ----
+const SALON_ALIAS = [['низк', 'low'], ['low', 'low'], ['средн', 'mid'], ['mid', 'mid'], ['высок', 'high'], ['high', 'high'],
+                     ['премиум', 'premium'], ['premium', 'premium'], ['эксклюзив', 'exclusive'], ['exclusive', 'exclusive']];
+let userCarErrors = 0;
+function parseUserCars(text){
+  const out = [];
+  String(text || '').split(/\r?\n/).forEach(line => {
+    line = line.trim();
+    if (!line || line[0] === '#') return;
+    const p = line.split('|').map(x => x.trim());
+    const key = (p[0] || '').toLowerCase();
+    const hit = SALON_ALIAS.find(a => key.startsWith(a[0]));
+    const price = parseInt((p[1] || '').replace(/[^0-9]/g, ''), 10);
+    const name = p[2];
+    if (!hit || !(price > 0) || !name) { userCarErrors++; return; }
+    const enc = encodeURIComponent;
+    const imgs = [];
+    if (p[3]) imgs.push('cars/' + enc(p[3]));
+    ['jpg', 'jpeg', 'png', 'webp'].forEach(e => imgs.push('cars/' + enc(name) + '.' + e));
+    out.push({ id: 'u:' + name, salon: hit[1], name, price, imgs });
+  });
+  return out;
+}
+const BRIDGE = window.AndroidBridge || null;
+let USER_CARS = [];
+try { if (BRIDGE) USER_CARS = parseUserCars(BRIDGE.getCarsText()); } catch (e) {}
+const CARS = BASE_CARS.concat(USER_CARS);
 const SALONS = window.SALONS || [];
 const SELL_RATE = 0.8;                     // при продаже машины возвращается 80% цены
 let curSalon = SALONS.length ? SALONS[0].id : null;
 const CAR_SVG = '<svg viewBox="0 0 200 80" fill="none"><path d="M10 56 L20 40 Q27 30 44 28 L76 26 Q92 10 114 11 L140 14 Q154 18 162 30 L184 36 Q194 40 194 50 L194 56 Z" fill="rgba(255,255,255,.9)"/><path d="M84 28 Q96 17 112 17 L132 19 Q142 22 148 29 Z" fill="rgba(16,19,31,.55)"/><circle cx="52" cy="58" r="12" fill="#10131f"/><circle cx="52" cy="58" r="5" fill="#9aa2c8"/><circle cx="152" cy="58" r="12" fill="#10131f"/><circle cx="152" cy="58" r="5" fill="#9aa2c8"/></svg>';
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 function carImg(c){
-  const list = [];
-  if (c.img) list.push(c.img);
-  ['jpg', 'jpeg', 'png', 'webp'].forEach(e => list.push('cars/' + c.id + '.' + e));
+  let list = [];
+  if (c.imgs) list = c.imgs.slice();
+  else {
+    if (c.img) list.push(c.img);
+    ['jpg', 'jpeg', 'png', 'webp'].forEach(e => list.push('cars/' + c.id + '.' + e));
+  }
   return `<img src="${esc(list[0])}" data-rest="${esc(list.slice(1).join('|'))}" alt="" onerror="carImgErr(this)">`;
 }
 // если картинка не найдена, пробуем другие расширения, а потом показываем заглушку
@@ -754,10 +794,21 @@ function carImgErr(img){
   if (rest.length) { img.dataset.rest = rest.slice(1).join('|'); img.src = rest[0]; }
   else if (img.parentNode) img.parentNode.innerHTML = CAR_SVG;
 }
+function renderCarsInfo(){
+  const info = $('#carsInfo'), ab = $('#accessBtn');
+  if (!info) return;
+  if (!BRIDGE) { info.textContent = ''; ab.hidden = true; return; }
+  let access = false, folder = '';
+  try { access = BRIDGE.hasAccess(); folder = BRIDGE.getFolder(); } catch (e) {}
+  ab.hidden = access;
+  info.innerHTML = `📁 Папка: <b>${esc(folder)}</b><br>Своих машин: <b>${USER_CARS.length}</b>` + (userCarErrors ? ` · строк с ошибкой: <b>${userCarErrors}</b>` : '') +
+    (access ? '' : '<br>Без доступа к файлам папка спрятана в данных приложения. Нажмите «Доступ к файлам».');
+}
 function renderCars(){
+  renderCarsInfo();
   const chips = $('#salons'), list = $('#carList');
   if (!chips || !list) return;
-  if (!SALONS.length) { chips.innerHTML = ''; list.innerHTML = '<div class="empty">Не найден файл cars.js или в нём нет салонов.</div>'; return; }
+  if (!SALONS.length) { chips.innerHTML = ''; list.innerHTML = '<div class="empty">Файл cars.js не загрузился или в нём ошибка (проверьте запятые и кавычки).</div>'; return; }
   chips.innerHTML = SALONS.map(s => {
     const all = CARS.filter(c => c.salon === s.id), own = all.filter(c => S.cars.includes(c.id)).length;
     return `<button class="chip${s.id === curSalon ? ' active' : ''}" style="--sc:${s.color}" data-salon="${s.id}">${esc(s.name)} <small>${own}/${all.length}</small></button>`;
@@ -821,8 +872,10 @@ function menu(){
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-act],[data-bulk],[data-salon],#menuBtn');
+  const t = e.target.closest('[data-tab],[data-act],[data-bulk],[data-salon],[data-reload],[data-access],#menuBtn');
   if (t) {
+    if (t.dataset.reload) { location.reload(); return; }
+    if (t.dataset.access) { try { BRIDGE && BRIDGE.requestAccess(); } catch (e) {} return; }
     if (t.dataset.salon) { curSalon = t.dataset.salon; $('#carList').scrollTop = 0; return renderCars(); }
     if (t.dataset.act === 'buycar') return buyCar(t.dataset.cid);
     if (t.dataset.act === 'sellcar') return sellCar(t.dataset.cid);
