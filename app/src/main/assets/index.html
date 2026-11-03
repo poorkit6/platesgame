@@ -145,6 +145,22 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 .lk-title,.lk-owner,.lk-val,.lk-bar,.lk-sub{transition:opacity .7s,transform .7s}
 .lk-hide{opacity:0!important;transform:translateY(10px)}
 .lk-owner{font-size:clamp(16px,5vw,21px);font-weight:800;color:#ffe08a;text-shadow:0 0 18px #ffd98a88;max-width:92%;line-height:1.3}
+/* ---------- автосалон ---------- */
+.salons{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.salons::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;padding:9px 14px;border-radius:99px;background:var(--card);font-weight:800;font-size:13px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.chip small{opacity:.7;font-weight:700}
+.chip.active{background:var(--sc);color:#10131f;border-color:transparent}
+.car{flex:0 0 auto;background:var(--card);border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+.car .pic{aspect-ratio:16/9;position:relative;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--sc),#161b34 85%)}
+.car .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.car .pic svg{width:62%;opacity:.9;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.car.owned .pic::after{content:"В гараже ✓";position:absolute;top:10px;left:10px;background:#3fc58a;color:#07170f;font-weight:800;font-size:12px;padding:4px 10px;border-radius:99px}
+.car .info{padding:12px;display:flex;align-items:center;gap:10px}
+.car .nm{flex:1;font-weight:800;line-height:1.25}
+.car .pr{display:block;margin-top:3px;font-size:16px;color:var(--gold);font-variant-numeric:tabular-nums}
+.car .btn{padding:11px 16px;font-size:14px;text-align:center;line-height:1.2}
+.car .btn small{font-weight:700;opacity:.8}
 </style>
 
 </head>
@@ -181,11 +197,16 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
       </div>
       <div class="list" id="safeList"></div>
     </section>
+    <section id="screen-cars" class="screen list-screen">
+      <div class="salons" id="salons"></div>
+      <div class="list" id="carList"></div>
+    </section>
   </main>
   <nav>
     <button data-tab="play" class="active"><span class="ic">🎰</span>Играть</button>
     <button data-tab="coll"><span class="ic">🗂️</span>Коллекция<span class="badge" id="bColl" hidden></span></button>
     <button data-tab="safe"><span class="ic">🔒</span>Сейф<span class="badge" id="bSafe" hidden></span></button>
+    <button data-tab="cars"><span class="ic">🚗</span>Автосалон</button>
   </nav>
 </div>
 
@@ -202,6 +223,7 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 <div id="modal"><div class="mbox" id="mbox"></div></div>
 <div id="toast"></div>
 
+<script src="cars.js"></script>
 <script>
 'use strict';
 /* =========================================================
@@ -363,7 +385,7 @@ function genSpecial(){
    СОСТОЯНИЕ
    ========================================================= */
 const KEY = 'plates_v1';
-const defaultState = () => ({ money: START, seq: 0, rolls: 0, collection: [], safe: [], last: null, best: null });
+const defaultState = () => ({ money: START, seq: 0, rolls: 0, collection: [], safe: [], cars: [], last: null, best: null });
 function load(){
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.money === 'number') return Object.assign(defaultState(), s); } catch(e){}
   return defaultState();
@@ -460,7 +482,7 @@ function renderPlay(){
   }
   renderQuick(); renderHint();
 }
-function renderAll(dir){ renderMoney(dir); renderBadges(); renderLists(); renderPlay(); }
+function renderAll(dir){ renderMoney(dir); renderBadges(); renderLists(); renderPlay(); renderCars(); }
 
 function showResult(p, animate){
   const r = rid(p);
@@ -711,7 +733,69 @@ function resetGame(){ S = defaultState(); shownMoney = S.money; save(); spinning
 /* =========================================================
    UI
    ========================================================= */
+/* =========================================================
+   АВТОСАЛОН (данные в cars.js, картинки в папке cars/)
+   ========================================================= */
+const CARS = window.CARS || [];
+const SALONS = window.SALONS || [];
+const SELL_RATE = 0.8;                     // при продаже машины возвращается 80% цены
+let curSalon = SALONS.length ? SALONS[0].id : null;
+const CAR_SVG = '<svg viewBox="0 0 200 80" fill="none"><path d="M10 56 L20 40 Q27 30 44 28 L76 26 Q92 10 114 11 L140 14 Q154 18 162 30 L184 36 Q194 40 194 50 L194 56 Z" fill="rgba(255,255,255,.9)"/><path d="M84 28 Q96 17 112 17 L132 19 Q142 22 148 29 Z" fill="rgba(16,19,31,.55)"/><circle cx="52" cy="58" r="12" fill="#10131f"/><circle cx="52" cy="58" r="5" fill="#9aa2c8"/><circle cx="152" cy="58" r="12" fill="#10131f"/><circle cx="152" cy="58" r="5" fill="#9aa2c8"/></svg>';
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function carImg(c){
+  const list = [];
+  if (c.img) list.push(c.img);
+  ['jpg', 'jpeg', 'png', 'webp'].forEach(e => list.push('cars/' + c.id + '.' + e));
+  return `<img src="${esc(list[0])}" data-rest="${esc(list.slice(1).join('|'))}" alt="" onerror="carImgErr(this)">`;
+}
+// если картинка не найдена, пробуем другие расширения, а потом показываем заглушку
+function carImgErr(img){
+  const rest = (img.dataset.rest || '').split('|').filter(Boolean);
+  if (rest.length) { img.dataset.rest = rest.slice(1).join('|'); img.src = rest[0]; }
+  else if (img.parentNode) img.parentNode.innerHTML = CAR_SVG;
+}
+function renderCars(){
+  const chips = $('#salons'), list = $('#carList');
+  if (!chips || !list) return;
+  if (!SALONS.length) { chips.innerHTML = ''; list.innerHTML = '<div class="empty">Не найден файл cars.js или в нём нет салонов.</div>'; return; }
+  chips.innerHTML = SALONS.map(s => {
+    const all = CARS.filter(c => c.salon === s.id), own = all.filter(c => S.cars.includes(c.id)).length;
+    return `<button class="chip${s.id === curSalon ? ' active' : ''}" style="--sc:${s.color}" data-salon="${s.id}">${esc(s.name)} <small>${own}/${all.length}</small></button>`;
+  }).join('');
+  const sal = SALONS.find(s => s.id === curSalon) || SALONS[0];
+  const top = list.scrollTop;
+  list.style.setProperty('--sc', sal.color);
+  const cars = CARS.filter(c => c.salon === sal.id).sort((a, b) => a.price - b.price);
+  list.innerHTML = cars.length ? cars.map(c => {
+    const own = S.cars.includes(c.id);
+    const btn = own
+      ? `<button class="btn ghost" data-act="sellcar" data-cid="${esc(c.id)}">Продать<br><small>${fmt(c.price * SELL_RATE)}</small></button>`
+      : `<button class="btn ${S.money >= c.price ? 'sell' : 'ghost'}" data-act="buycar" data-cid="${esc(c.id)}">Купить</button>`;
+    return `<div class="car${own ? ' owned' : ''}"><div class="pic">${carImg(c)}</div><div class="info"><div class="nm">${esc(c.name)}<span class="pr">${fmt(c.price)}</span></div>${btn}</div></div>`;
+  }).join('') : '<div class="empty">В этом салоне пока нет машин.<br>Добавь их в файл cars.js.</div>';
+  list.scrollTop = top;
+}
+function buyCar(id){
+  const c = CARS.find(x => x.id === id); if (!c || S.cars.includes(id)) return;
+  if (S.money < c.price) { toast('Не хватает ' + fmt(c.price - S.money)); return; }
+  modal('Купить машину?', `${c.name}\n${fmt(c.price)}`, [{ label: 'Купить', cls: 'sell', fn: () => {
+    if (S.money < c.price || S.cars.includes(id)) return;
+    S.money -= c.price; S.cars.push(id); save();
+    toast('🚗 ' + c.name + ' в гараже'); vibrate([30, 40, 30]); renderAll('down');
+  } }, { label: 'Отмена', cls: 'ghost' }]);
+}
+function sellCar(id){
+  const c = CARS.find(x => x.id === id); if (!c || !S.cars.includes(id)) return;
+  const get = Math.round(c.price * SELL_RATE);
+  modal('Продать машину?', `${c.name}\nВы получите ${fmt(get)} (${Math.round(SELL_RATE * 100)}% цены)`, [{ label: 'Продать', cls: 'sell', fn: () => {
+    const i = S.cars.indexOf(id); if (i < 0) return;
+    S.cars.splice(i, 1); S.money += get; save();
+    toast('+ ' + fmt(get)); renderAll('up');
+  } }, { label: 'Отмена', cls: 'ghost' }]);
+}
+
 function tab(name){
+  if (name === 'cars') renderCars();
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
 }
@@ -731,14 +815,17 @@ function modal(title, text, buttons){
 function menu(){
   const b = S.best;
   const best = b ? `Самый дорогой номер: ${b.l1}${b.d}${b.l2} ${b.r} — ${fmt(b.val)}` : 'Пока нет данных.';
-  modal('Статистика', `Прокрутов: ${S.rolls}\n${best}\n\nИзвестные номера и спецсерии взяты из открытых источников. Игра неофициальная и сделана для развлечения.`, [
+  modal('Статистика', `Прокрутов: ${S.rolls}\nМашин в гараже: ${S.cars.length}\n${best}\n\nИзвестные номера и спецсерии взяты из открытых источников. Игра неофициальная и сделана для развлечения.`, [
     { label: 'Начать заново', cls: 'danger', fn: () => modal('Начать заново?', 'Весь прогресс, коллекция и сейф будут стёрты.', [{ label: 'Да, стереть', cls: 'danger', fn: resetGame }, { label: 'Отмена', cls: 'ghost' }]) },
     { label: 'Закрыть', cls: 'ghost' }]);
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-act],[data-bulk],#menuBtn');
+  const t = e.target.closest('[data-tab],[data-act],[data-bulk],[data-salon],#menuBtn');
   if (t) {
+    if (t.dataset.salon) { curSalon = t.dataset.salon; $('#carList').scrollTop = 0; return renderCars(); }
+    if (t.dataset.act === 'buycar') return buyCar(t.dataset.cid);
+    if (t.dataset.act === 'sellcar') return sellCar(t.dataset.cid);
     if (t.dataset.tab) return tab(t.dataset.tab);
     if (t.dataset.bulk) return bulk(t.dataset.bulk);
     if (t.id === 'menuBtn') return menu();
