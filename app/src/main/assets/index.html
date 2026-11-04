@@ -107,8 +107,9 @@ main{flex:1;position:relative;min-height:0}
 .item .btn{padding:9px 13px;font-size:13px}
 .empty{margin:auto;text-align:center;color:var(--dim);padding:30px;line-height:1.5}
 
-nav{display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0b0e1bdd;border-top:1px solid var(--line)}
-nav button{flex:1;padding:10px 4px;border-radius:12px;background:transparent;color:var(--dim);font-weight:700;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+nav{display:flex;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0b0e1bdd;border-top:1px solid var(--line);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:0 0 auto;min-width:80px;padding:10px 8px;border-radius:12px;background:transparent;color:var(--dim);font-weight:700;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
 nav button .ic{font-size:20px}
 nav button.active{background:var(--card);color:var(--text)}
 nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1405;border-radius:99px;font-size:10px;padding:1px 6px;font-weight:800}
@@ -166,6 +167,51 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 .carinfo{flex-basis:100%;color:var(--dim);font-size:11px;line-height:1.35;word-break:break-all}
 .carinfo:empty{display:none}
 .carinfo b{color:var(--text)}
+/* ---------- контейнеры ---------- */
+.cont-scroll{flex:1;overflow-y:auto;padding-bottom:14px;-webkit-overflow-scrolling:touch}
+.strip-wrap{position:relative;margin:4px 0 12px;padding-top:24px}
+.arrow{position:absolute;top:0;left:50%;transform:translateX(-50%);color:var(--gold);font-size:24px;line-height:1;text-shadow:0 0 12px #ffc94acc;z-index:3}
+.strip-view{position:relative;height:150px;overflow:hidden;border-radius:16px;background:linear-gradient(#171c36,#10142a);border:1px solid var(--line)}
+.strip-view::before,.strip-view::after{content:"";position:absolute;top:0;bottom:0;width:56px;z-index:2;pointer-events:none}
+.strip-view::before{left:0;background:linear-gradient(90deg,#0e1120,transparent)}
+.strip-view::after{right:0;background:linear-gradient(270deg,#0e1120,transparent)}
+.strip-line{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--gold);box-shadow:0 0 10px var(--gold);z-index:3}
+.strip-track{position:absolute;left:50%;top:10px;display:flex;gap:8px;will-change:transform}
+.slot{flex:0 0 112px;width:112px;height:130px;border-radius:12px;background:var(--card);border:2px solid var(--rc,var(--c-common));overflow:hidden;display:flex;flex-direction:column}
+.slot.rar-common{--rc:var(--c-common)}.slot.rar-rare{--rc:var(--c-rare)}.slot.rar-epic{--rc:var(--c-epic)}.slot.rar-legendary{--rc:var(--c-legendary)}
+.slot .pic{height:62px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rc),#161b34 90%);position:relative}
+.slot .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.slot .pic svg{width:70%}
+.slot .sn{font-size:11px;font-weight:800;line-height:1.15;padding:5px 6px 0;height:2.7em;overflow:hidden}
+.slot .sp{font-size:11px;color:var(--gold);font-weight:800;padding:0 6px}
+.slot.win{box-shadow:0 0 0 3px #fff,0 0 24px var(--rc);transform:scale(1.05)}
+.openbtn{width:100%;padding:16px;font-size:17px;margin-bottom:12px}
+.cres{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:16px;padding:10px;margin-bottom:12px;border:2px solid var(--rc,var(--c-common))}
+.cres.rar-common{--rc:var(--c-common)}.cres.rar-rare{--rc:var(--c-rare)}.cres.rar-epic{--rc:var(--c-epic)}.cres.rar-legendary{--rc:var(--c-legendary)}
+.cres .pic{width:96px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;flex:0 0 auto;background:linear-gradient(135deg,var(--rc),#161b34 90%);display:flex;align-items:center;justify-content:center}
+.cres .pic img{width:100%;height:100%;object-fit:cover}.cres .pic svg{width:70%}
+.cres .ci{flex:1;display:flex;flex-direction:column;gap:2px;line-height:1.25}
+.cres .ci span{color:var(--gold);font-weight:800;font-size:14px}.cres .ci small{color:var(--dim)}
+.cres .btn{padding:9px 12px;font-size:13px;text-align:center}
+.cinfo{color:var(--dim);font-size:11px;line-height:1.4;margin:0 0 10px;word-break:break-all}
+.cinfo b{color:var(--text)}
+.chead{font-weight:800;margin:6px 0 8px}
+.crow{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:8px;margin-bottom:8px;border-left:4px solid var(--rc,var(--c-common))}
+.crow.rar-common{--rc:var(--c-common)}.crow.rar-rare{--rc:var(--c-rare)}.crow.rar-epic{--rc:var(--c-epic)}.crow.rar-legendary{--rc:var(--c-legendary)}
+.crow .pic{width:64px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;flex:0 0 auto;background:linear-gradient(135deg,var(--rc),#161b34 90%);display:flex;align-items:center;justify-content:center}
+.crow .pic img{width:100%;height:100%;object-fit:cover}.crow .pic svg{width:70%}
+.crow .cn{flex:1;font-weight:700;font-size:13px;line-height:1.25}
+.crow .cn small{display:block;color:var(--gold);font-weight:800}
+.crow .cp{font-weight:900;color:var(--rc)}
+/* ---------- гараж ---------- */
+.car .pic .onplate{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);pointer-events:none}
+.plate.sm{--fs:min(4.4vw,18px)}
+.gb{display:flex;flex-direction:column;gap:6px}
+.gb .btn{padding:9px 12px;font-size:13px}
+.gtxt{flex:1;color:var(--dim);font-size:12px;line-height:1.35}
+.picker{max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card2);padding:8px 10px;border-radius:12px;text-align:left}
+.prow .pv{font-weight:800;font-size:13px;white-space:nowrap}
 </style>
 
 </head>
@@ -211,12 +257,35 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
       </div>
       <div class="list" id="carList"></div>
     </section>
+    <section id="screen-cont" class="screen list-screen">
+      <div class="salons" id="contTabs"></div>
+      <div class="cont-scroll" id="contScroll">
+        <div class="strip-wrap">
+          <div class="arrow">▼</div>
+          <div class="strip-view" id="stripView"><div class="strip-track" id="stripTrack"></div><div class="strip-line"></div></div>
+        </div>
+        <button class="btn sell openbtn" id="openBtn">Открыть</button>
+        <div id="contResult"></div>
+        <div class="cinfo" id="contInfo"></div>
+        <div class="chead">Содержимое и шансы</div>
+        <div id="contList"></div>
+      </div>
+    </section>
+    <section id="screen-garage" class="screen list-screen">
+      <div class="toolbar">
+        <div class="gtxt">Купленные и выбитые машины. Повесьте на машину свой номер из коллекции или сейфа.</div>
+        <div class="sum" id="garSum"></div>
+      </div>
+      <div class="list" id="garList"></div>
+    </section>
   </main>
   <nav>
     <button data-tab="play" class="active"><span class="ic">🎰</span>Играть</button>
     <button data-tab="coll"><span class="ic">🗂️</span>Коллекция<span class="badge" id="bColl" hidden></span></button>
     <button data-tab="safe"><span class="ic">🔒</span>Сейф<span class="badge" id="bSafe" hidden></span></button>
     <button data-tab="cars"><span class="ic">🚗</span>Автосалон</button>
+    <button data-tab="cont"><span class="ic">📦</span>Контейнеры</button>
+    <button data-tab="garage"><span class="ic">🏠</span>Гараж<span class="badge" id="bGar" hidden></span></button>
   </nav>
 </div>
 
@@ -234,6 +303,7 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 <div id="toast"></div>
 
 <script src="cars.js"></script>
+<script src="containers.js"></script>
 <script>
 'use strict';
 /* =========================================================
@@ -369,11 +439,14 @@ function valuate(p, rnd){
   else if (SPB.has(r)) { m *= 3.5; tags.push('Санкт-Петербург'); }
   else if (r.length === 2 && r[0] === r[1]) { m *= 1.5; tags.push('Красивый регион'); }
 
+  // «идеальный» номер: одинаковые цифры и одинаковые буквы (А111АА, О777ОО и т.п.)
+  if (d[0] === d[1] && d[1] === d[2] && p.l1 === l2a && l2a === l2b) { m *= 60; tags.push('Идеальный номер'); }
+
   if (r.length === 3 && d === r) { m *= 4; tags.push('Номер = регион'); }
   else if (r.length === 2 && d.slice(1) === r) { m *= 1.8; tags.push('Номер = регион'); }
 
   // мягкий потолок на накопленные множители
-  if (m > 3000) m = 3000 * Math.pow(m / 3000, 0.7);
+  if (m > 8000) m = 8000 * Math.pow(m / 8000, 0.8);
   return { val: roundPrice(MIN * m * (0.85 + rnd() * 0.4)), tags, owner: '' };
 }
 
@@ -395,13 +468,13 @@ function genSpecial(){
    СОСТОЯНИЕ
    ========================================================= */
 const KEY = 'plates_v1';
-const defaultState = () => ({ money: START, seq: 0, rolls: 0, collection: [], safe: [], cars: [], xcars: [], xseq: 0, last: null, best: null });
+const defaultState = () => ({ money: START, seq: 0, rolls: 0, collection: [], safe: [], cars: [], xcars: [], xseq: 0, cplates: {}, last: null, best: null });
 function load(){
   try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && typeof s.money === 'number') return Object.assign(defaultState(), s); } catch(e){}
   return defaultState();
 }
 let S = load();
-S.cars = S.cars || []; S.xcars = S.xcars || []; S.xseq = S.xseq || 0;
+S.cars = S.cars || []; S.xcars = S.xcars || []; S.xseq = S.xseq || 0; S.cplates = S.cplates || {};
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} if (typeof scheduleExport === 'function') scheduleExport(); }
 
 const $ = s => document.querySelector(s);
@@ -409,6 +482,45 @@ const fmt = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + 
 const rid = p => p.rar || rarityOf(p.val).id;
 const rname = id => RARITIES.find(r => r.id === id).name;
 const find = (arr, id) => arr.findIndex(p => p.id === id);
+
+/* =========================================================
+   ЗВУКИ (WebAudio, без файлов). Включение и выключение: меню «⋯»
+   ========================================================= */
+const SND = { on: true, ctx: null, last: 0 };
+try { SND.on = localStorage.getItem('plates_snd') !== '0'; } catch (e) {}
+function actx(){
+  if (!SND.on) return null;
+  try {
+    if (!SND.ctx) SND.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (SND.ctx.state === 'suspended') SND.ctx.resume();
+    return SND.ctx;
+  } catch (e) { return null; }
+}
+function tone(f, d, type, vol, at, to){
+  const c = actx(); if (!c) return;
+  try {
+    const t = c.currentTime + (at || 0), o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
+    if (to) o.frequency.exponentialRampToValueAtTime(to, t + d);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.1, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + 0.03);
+  } catch (e) {}
+}
+const sClick = () => tone(660, .05, 'triangle', .07);
+const sTick = () => { const n = performance.now(); if (n - SND.last < 22) return; SND.last = n; tone(1400 + Math.random() * 250, .02, 'square', .03); };
+const sRoll = () => [0, 1, 2].forEach(i => tone(480 + i * 150, .05, 'square', .05, i * .04));
+const sCoin = () => { tone(1250, .07, 'square', .05); tone(1850, .16, 'square', .05, .07); };
+const sBuy = () => { tone(520, .09, 'triangle', .1); tone(780, .14, 'triangle', .1, .08); };
+const sErr = () => tone(170, .2, 'sawtooth', .07, 0, 110);
+const sChar = i => tone(360 + i * 75, .16, 'triangle', .12);
+const sBig = () => { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .5, 'triangle', .11, i * .09)); tone(180, .9, 'sine', .1, 0, 720); };
+function sWin(r){
+  if (r === 'legendary') return sBig();
+  const seq = r === 'epic' ? [523, 659, 784] : r === 'rare' ? [494, 622] : [440];
+  seq.forEach((f, i) => tone(f, .14, 'triangle', .09, i * .08));
+}
 
 /* =========================================================
    РИСУЕМ НОМЕР
@@ -441,7 +553,8 @@ function renderMoney(dir){
   })(t0);
 }
 function renderBadges(){
-  const bc = $('#bColl'), bs = $('#bSafe');
+  const bc = $('#bColl'), bs = $('#bSafe'), bg = $('#bGar');
+  if (bg) { const n = S.cars.length + S.xcars.length; bg.hidden = !n; bg.textContent = n; }
   bc.hidden = !S.collection.length; bc.textContent = S.collection.length;
   bs.hidden = !S.safe.length; bs.textContent = S.safe.length;
 }
@@ -471,6 +584,8 @@ function renderQuick(){
     q.innerHTML = `<button class="btn safe" data-act="tosafe" data-id="${p.id}">🔒 В сейф</button><button class="btn sell" data-act="sell" data-id="${p.id}">Продать за ${fmt(p.val)}</button>`;
   } else if (find(S.safe, p.id) >= 0) {
     q.innerHTML = `<div class="status">🔒 Лежит в сейфе</div>`;
+  } else if (onCar(p)) {
+    q.innerHTML = `<div class="status">🚗 Висит на машине</div>`;
   } else {
     q.innerHTML = `<div class="status">Продан за ${fmt(p.val)}</div>`;
   }
@@ -493,7 +608,7 @@ function renderPlay(){
   }
   renderQuick(); renderHint();
 }
-function renderAll(dir){ renderMoney(dir); renderBadges(); renderLists(); renderPlay(); renderCars(); }
+function renderAll(dir){ if (dir === 'up') sCoin(); else if (dir === 'down') sBuy(); renderMoney(dir); renderBadges(); renderLists(); renderPlay(); renderCars(); renderGarage(); renderCont(); }
 
 function showResult(p, animate){
   const r = rid(p);
@@ -505,11 +620,12 @@ function showResult(p, animate){
   $('#tags').innerHTML = (p.tags || []).map(t => `<span class="tag">${t}</span>`).join('');
   $('#owner').textContent = p.owner ? '⭐ ' + p.owner : '';
   const pr = $('#price');
-  if (animate) countUp(pr, p.val, r === 'legendary' ? 1400 : 650); else pr.textContent = fmt(p.val);
+  if (animate) countUp(pr, p.val, r === 'legendary' ? 1400 : 300); else pr.textContent = fmt(p.val);
 }
 function countUp(el, to, ms){
-  const t0 = performance.now();
+  const t0 = performance.now(), token = el.__cu = (el.__cu || 0) + 1;
   (function step(t){
+    if (el.__cu !== token) return;
     const k = Math.min(1, (t - t0) / ms);
     el.textContent = fmt(to * (1 - Math.pow(1 - k, 3)));
     if (k < 1) requestAnimationFrame(step);
@@ -528,9 +644,8 @@ function genPlate(){
 }
 
 function roll(forced){
-  if (spinning || locked) return;
-  if (S.money < COST) { noFunds(); return; }
-  spinning = true;
+  if (locked) return;
+  if (S.money < COST) { sErr(); noFunds(); return; }
   S.money -= COST;
   const p = forced || genPlate();
   const v = valuate(p);
@@ -540,41 +655,16 @@ function roll(forced){
   S.collection.push(p); S.last = p; S.rolls++;
   if (!S.best || p.val > S.best.val) S.best = { val: p.val, l1: p.l1, d: p.d, l2: p.l2, r: p.r };
   save();
-  renderMoney('down'); renderBadges(); renderLists(); renderQuick();
-  $('#rarBox').innerHTML = ''; $('#price').textContent = ''; $('#tags').innerHTML = ''; $('#owner').textContent = '';
-  $('#hint').textContent = '';
-
-  const wrap = $('#plateWrap');
-  wrap.className = 'plate-wrap';
-  wrap.innerHTML = '';
-  const el = plateEl(p, 'xl spinning');
-  wrap.appendChild(el);
-  const spans = el.querySelectorAll('.num span');
-  const rn = el.querySelector('.rn');
-  const lockAt = [250, 350, 450, 550, 650, 750, 880];
-  const hold = p.rar === 'legendary';   // у легендарки символы не фиксируем: интрига до анимации
-  const endAt = hold ? 1500 : lockAt[6] + 60;
-  const finals = [p.l1, p.d[0], p.d[1], p.d[2], p.l2[0], p.l2[1]];
-  const pools = [LET, '0123456789', '0123456789', '0123456789', LET, LET];
-  const t0 = performance.now(); let lastSwap = 0;
-  (function frame(now){
-    const t = now - t0;
-    if (now - lastSwap > 45) {
-      lastSwap = now;
-      spans.forEach((s, i) => { s.textContent = (!hold && t >= lockAt[i]) ? finals[i] : pools[i][Math.floor(Math.random() * pools[i].length)]; });
-      rn.textContent = (!hold && t >= lockAt[6]) ? p.r : REGIONS[Math.floor(Math.random() * REGIONS.length)];
-    }
-    if (t < endAt) { requestAnimationFrame(frame); return; }
-    if (!hold) { spans.forEach((s, i) => s.textContent = finals[i]); rn.textContent = p.r; }
-    spinning = false;
-    reveal(p);
-  })(t0);
+  sRoll();
+  renderMoney('down'); renderBadges(); renderLists();
+  reveal(p);                // результат сразу, без задержки
 }
 
 function reveal(p){
   if (p.rar === 'legendary') { legendary(p); return; }
   showResult(p, true);
   renderQuick();
+  sWin(p.rar);
   if (p.rar === 'epic') vibrate([25]);
   renderHint();
 }
@@ -619,6 +709,7 @@ function legendary(p){
   function next(){
     if (i < targets.length) {
       const t = targets[i++];
+      sChar(i);
       t.classList.remove('hide'); t.classList.add('in');
       const r = t.getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height / 2, 14, true);
@@ -626,10 +717,11 @@ function legendary(p){
       setTimeout(next, STEP);
     } else setTimeout(finale, 450);
   }
-  setTimeout(next, 750);
+  setTimeout(next, 250);
 
   function finale(){
     hides.forEach(q => $(q).classList.remove('lk-hide'));
+    sBig();
     countUp($('#lkVal'), p.val, 1600);
     const fl = $('#flash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go');
     vibrate([40, 60, 40, 60, 120]);
@@ -782,20 +874,22 @@ const SELL_RATE = 0.8;                     // при продаже машины
 let curSalon = SALONS.length ? SALONS[0].id : null;
 const CAR_SVG = '<svg viewBox="0 0 200 80" fill="none"><path d="M10 56 L20 40 Q27 30 44 28 L76 26 Q92 10 114 11 L140 14 Q154 18 162 30 L184 36 Q194 40 194 50 L194 56 Z" fill="rgba(255,255,255,.9)"/><path d="M84 28 Q96 17 112 17 L132 19 Q142 22 148 29 Z" fill="rgba(16,19,31,.55)"/><circle cx="52" cy="58" r="12" fill="#10131f"/><circle cx="52" cy="58" r="5" fill="#9aa2c8"/><circle cx="152" cy="58" r="12" fill="#10131f"/><circle cx="152" cy="58" r="5" fill="#9aa2c8"/></svg>';
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function carImgList(c){
+  if (c.imgs) return c.imgs.slice();
+  const list = [];
+  if (c.img) list.push(c.img);
+  ['jpg', 'jpeg', 'png', 'webp'].forEach(e => list.push('cars/' + (c.imgId || c.id) + '.' + e));
+  return list;
+}
 function carImg(c){
-  let list = [];
-  if (c.imgs) list = c.imgs.slice();
-  else {
-    if (c.img) list.push(c.img);
-    ['jpg', 'jpeg', 'png', 'webp'].forEach(e => list.push('cars/' + (c.imgId || c.id) + '.' + e));
-  }
+  const list = carImgList(c);
   return `<img src="${esc(list[0])}" data-rest="${esc(list.slice(1).join('|'))}" alt="" onerror="carImgErr(this)">`;
 }
 // если картинка не найдена, пробуем другие расширения, а потом показываем заглушку
 function carImgErr(img){
   const rest = (img.dataset.rest || '').split('|').filter(Boolean);
   if (rest.length) { img.dataset.rest = rest.slice(1).join('|'); img.src = rest[0]; }
-  else if (img.parentNode) img.parentNode.innerHTML = CAR_SVG;
+  else { img.insertAdjacentHTML('afterend', CAR_SVG); img.remove(); }
 }
 function renderCarsInfo(){
   const info = $('#carsInfo'), ab = $('#accessBtn');
@@ -811,14 +905,16 @@ function cardHTML(c, own, btn){
   return `<div class="car${own ? ' owned' : ''}"><div class="pic">${carImg(c)}</div><div class="info"><div class="nm">${esc(c.name)}<span class="pr">${fmt(c.price)}</span></div>${btn}</div></div>`;
 }
 const sellBtn = (act, id, price) => `<button class="btn ghost" data-act="${act}" data-cid="${esc(id)}">Продать<br><small>${fmt(price * SELL_RATE)}</small></button>`;
-// гараж: машины из автосалона + выданные через give.txt
+// гараж: машины из автосалона + выигранные в контейнерах + выданные через give.txt
 function garageItems(){
   const out = [];
-  S.cars.forEach(id => { const c = CARS.find(x => x.id === id); if (c) out.push({ c, price: c.price, btn: sellBtn('sellcar', id, c.price) }); });
+  S.cars.forEach(id => { const c = CARS.find(x => x.id === id); if (c) out.push({ c, key: id, sellAct: 'sellcar', price: c.price }); });
   S.xcars.forEach(x => {
     const cat = x.cat ? CARS.find(c => c.id === x.cat) : null;
-    const c = cat ? Object.assign({}, cat, { id: x.id, imgId: cat.id, name: x.name, price: x.price }) : { id: x.id, name: x.name, price: x.price, imgs: nameImgs(x.name) };
-    out.push({ c, price: x.price, btn: sellBtn('sellx', x.id, x.price) });
+    const c = x.imgs ? { id: x.id, name: x.name, price: x.price, imgs: x.imgs }
+      : cat ? Object.assign({}, cat, { id: x.id, imgId: cat.id, name: x.name, price: x.price })
+      : { id: x.id, name: x.name, price: x.price, imgs: nameImgs(x.name) };
+    out.push({ c, key: x.id, sellAct: 'sellx', price: x.price });
   });
   return out.sort((a, b) => b.price - a.price);
 }
@@ -827,26 +923,21 @@ function renderCars(){
   const chips = $('#salons'), list = $('#carList');
   if (!chips || !list) return;
   if (!SALONS.length) { chips.innerHTML = ''; list.innerHTML = '<div class="empty">Файл cars.js не загрузился или в нём ошибка (проверьте запятые и кавычки).</div>'; return; }
-  const gar = garageItems();
   chips.innerHTML = SALONS.map(sl => {
     const all = CARS.filter(c => c.salon === sl.id), own = all.filter(c => S.cars.includes(c.id)).length;
     return `<button class="chip${sl.id === curSalon ? ' active' : ''}" style="--sc:${sl.color}" data-salon="${sl.id}">${esc(sl.name)} <small>${own}/${all.length}</small></button>`;
-  }).join('') + `<button class="chip${curSalon === 'garage' ? ' active' : ''}" style="--sc:#c9d1ff" data-salon="garage">🚗 Гараж <small>${gar.length}</small></button>`;
+  }).join('');
   const top = list.scrollTop;
-  if (curSalon === 'garage') {
-    list.style.setProperty('--sc', '#c9d1ff');
-    list.innerHTML = gar.length ? gar.map(g => cardHTML(g.c, false, g.btn)).join('') : '<div class="empty">Гараж пуст.<br>Купите машину в автосалоне.</div>';
-  } else {
-    const sal = SALONS.find(sl => sl.id === curSalon) || SALONS[0];
-    list.style.setProperty('--sc', sal.color);
-    const cars = CARS.filter(c => c.salon === sal.id).sort((a, b) => a.price - b.price);
-    list.innerHTML = cars.length ? cars.map(c => {
-      const own = S.cars.includes(c.id);
-      const btn = own ? sellBtn('sellcar', c.id, c.price)
-        : `<button class="btn ${S.money >= c.price ? 'sell' : 'ghost'}" data-act="buycar" data-cid="${esc(c.id)}">Купить</button>`;
-      return cardHTML(c, own, btn);
-    }).join('') : '<div class="empty">В этом салоне пока нет машин.<br>Добавьте их в файл my_cars.txt или cars.js.</div>';
-  }
+  if (curSalon === 'garage') curSalon = SALONS[0].id;
+  const sal = SALONS.find(sl => sl.id === curSalon) || SALONS[0];
+  list.style.setProperty('--sc', sal.color);
+  const cars = CARS.filter(c => c.salon === sal.id).sort((a, b) => a.price - b.price);
+  list.innerHTML = cars.length ? cars.map(c => {
+    const own = S.cars.includes(c.id);
+    const btn = own ? sellBtn('sellcar', c.id, c.price)
+      : `<button class="btn ${S.money >= c.price ? 'sell' : 'ghost'}" data-act="buycar" data-cid="${esc(c.id)}">Купить</button>`;
+    return cardHTML(c, own, btn);
+  }).join('') : '<div class="empty">В этом салоне пока нет машин.<br>Добавьте их в файл my_cars.txt или cars.js.</div>';
   list.scrollTop = top;
 }
 function sellX(id){
@@ -854,13 +945,13 @@ function sellX(id){
   const x = S.xcars[i], get = Math.round(x.price * SELL_RATE);
   modal('Продать машину?', `${x.name}\nВы получите ${fmt(get)} (${Math.round(SELL_RATE * 100)}% цены)`, [{ label: 'Продать', cls: 'sell', fn: () => {
     const j = S.xcars.findIndex(y => y.id === id); if (j < 0) return;
-    S.xcars.splice(j, 1); S.money += get; save();
+    S.xcars.splice(j, 1); S.money += get; releasePlate(id); save();
     toast('+ ' + fmt(get)); renderAll('up');
   } }, { label: 'Отмена', cls: 'ghost' }]);
 }
 function buyCar(id){
   const c = CARS.find(x => x.id === id); if (!c || S.cars.includes(id)) return;
-  if (S.money < c.price) { toast('Не хватает ' + fmt(c.price - S.money)); return; }
+  if (S.money < c.price) { toast('Не хватает ' + fmt(c.price - S.money)); sErr(); return; }
   modal('Купить машину?', `${c.name}\n${fmt(c.price)}`, [{ label: 'Купить', cls: 'sell', fn: () => {
     if (S.money < c.price || S.cars.includes(id)) return;
     S.money -= c.price; S.cars.push(id); save();
@@ -872,9 +963,211 @@ function sellCar(id){
   const get = Math.round(c.price * SELL_RATE);
   modal('Продать машину?', `${c.name}\nВы получите ${fmt(get)} (${Math.round(SELL_RATE * 100)}% цены)`, [{ label: 'Продать', cls: 'sell', fn: () => {
     const i = S.cars.indexOf(id); if (i < 0) return;
-    S.cars.splice(i, 1); S.money += get; save();
+    S.cars.splice(i, 1); S.money += get; releasePlate(id); save();
     toast('+ ' + fmt(get)); renderAll('up');
   } }, { label: 'Отмена', cls: 'ghost' }]);
+}
+
+/* =========================================================
+   КОНТЕЙНЕРЫ (данные в containers.js, свои правки в my_containers.txt)
+   ========================================================= */
+const CONT_TEMPLATE = `# СВОЁ СОДЕРЖИМОЕ КОНТЕЙНЕРОВ
+# Игра читает файл при запуске и по кнопке «Обновить» на вкладке «Контейнеры».
+#
+# ДОБАВИТЬ ИЛИ ИЗМЕНИТЬ МАШИНУ:   контейнер | шанс | название | цена | файл картинки
+#   контейнер: немецкий, японский или американский
+#   шанс: число. Чем больше, тем чаще выпадает. Доля машины = её шанс / сумма шансов в контейнере
+#         (в стартовых контейнерах сумма равна 100, поэтому шанс совпадает с процентами)
+#   цена и файл картинки не обязательны. Картинку положите в папку cars.
+#   Если машина с таким названием уже есть, заменятся её шанс, цена и картинка.
+#   Шанс 0 убирает машину из контейнера.
+# ЦЕНА КОНТЕЙНЕРА:                цена | немецкий | 5 000 000
+#
+# Примеры (уберите # в начале строки, чтобы включить):
+# немецкий | 3 | Моя немка | 15 000 000 | my-de.jpg
+# японский | 0 | Honda S2000
+# цена | американский | 4 000 000
+`;
+let contErrors = 0, CONTS = [];
+function buildConts(text){
+  const base = (window.CONTAINERS || []).map(c => Object.assign({}, c, { cars: c.cars.map(x => Object.assign({}, x)) }));
+  const match = k => base.find(c => c.id === k || (k.length >= 3 && c.name.toLowerCase().startsWith(k.slice(0, 5))));
+  String(text || '').split(/\r?\n/).forEach(line => {
+    line = line.trim(); if (!line || line[0] === '#') return;
+    const f = line.split('|').map(x => x.trim());
+    const k0 = (f[0] || '').toLowerCase();
+    if (k0.startsWith('цена')) {
+      const c = match((f[1] || '').toLowerCase()), pr = parsePrice(f[2]);
+      if (!c || !(pr > 0)) { contErrors++; return; }
+      c.price = pr; return;
+    }
+    const c = match(k0);
+    const ch = parseFloat((f[1] || '').replace(',', '.').replace(/\s/g, ''));
+    const name = f[2];
+    if (!c || !(ch >= 0) || !name) { contErrors++; return; }
+    const pr = parsePrice(f[3]), file = f[4];
+    const ex = c.cars.find(x => x.name.toLowerCase() === name.toLowerCase() || x.id === name);
+    if (ex) {
+      ex.chance = ch; if (pr > 0) ex.price = pr;
+      if (file) ex.imgs = ['cars/' + encodeURIComponent(file)].concat(carImgList({ id: ex.id }));
+    } else {
+      if (!(pr > 0)) { contErrors++; return; }
+      c.cars.push({ id: 'c:' + name, name, price: pr, chance: ch, imgs: nameImgs(name, file) });
+    }
+  });
+  base.forEach(c => { c.cars = c.cars.filter(x => x.chance > 0); });
+  return base;
+}
+function loadConts(){
+  contErrors = 0; let text = '';
+  if (BRIDGE) {
+    try { text = BRIDGE.readFile('my_containers.txt') || ''; if (!text.trim()) BRIDGE.writeFile('my_containers.txt', CONT_TEMPLATE); } catch (e) {}
+  }
+  CONTS = buildConts(text);
+}
+const SLOT_W = 112, SLOT_STEP = 120;
+let curCont = null, busyC = false, idleFor = null;
+const contTotal = c => c.cars.reduce((t, x) => t + x.chance, 0);
+function pickCar(c){
+  let r = Math.random() * contTotal(c);
+  for (const x of c.cars) { r -= x.chance; if (r <= 0) return x; }
+  return c.cars[c.cars.length - 1];
+}
+const slotClass = (x, c) => { const p = x.chance / contTotal(c) * 100; return p >= 15 ? 'common' : p >= 5 ? 'rare' : p >= 1.5 ? 'epic' : 'legendary'; };
+function pctStr(x, c){
+  const p = x.chance / contTotal(c) * 100;
+  return (p >= 10 ? p.toFixed(0) : p >= 1 ? p.toFixed(1) : p.toFixed(2)).replace(/\.0+$/, '') + '%';
+}
+const slotHTML = (x, c) => `<div class="slot rar-${slotClass(x, c)}"><div class="pic">${carImg(x)}</div><div class="sn">${esc(x.name)}</div><div class="sp">${fmt(x.price)}</div></div>`;
+const curContObj = () => CONTS.find(c => c.id === curCont) || CONTS[0];
+function setTrack(pos){ $('#stripTrack').style.transform = 'translate3d(' + (-pos) + 'px,0,0)'; }
+
+function renderCont(){
+  const tabs = $('#contTabs'); if (!tabs) return;
+  const btn = $('#openBtn');
+  if (!CONTS.length || !CONTS.some(c => c.cars.length)) {
+    tabs.innerHTML = ''; btn.hidden = true;
+    $('#contList').innerHTML = '<div class="empty">Нет контейнеров. Проверьте файл containers.js.</div>'; return;
+  }
+  btn.hidden = false;
+  if (!curCont || !CONTS.some(c => c.id === curCont)) curCont = CONTS[0].id;
+  const c = curContObj();
+  tabs.innerHTML = CONTS.map(x => `<button class="chip${x.id === curCont ? ' active' : ''}" style="--sc:${x.color || '#ffd34e'}" data-cont="${esc(x.id)}">${x.flag || ''} ${esc(x.name)}</button>`).join('') +
+    (BRIDGE ? '<button class="chip" style="--sc:#c9d1ff" data-reload="1">⟳ Обновить</button>' : '');
+  btn.textContent = busyC ? 'Идёт прокрут…' : `Открыть за ${fmt(c.price)}`;
+  btn.className = 'btn openbtn ' + (S.money >= c.price && !busyC ? 'sell' : 'ghost');
+  if (busyC) return;                        // во время прокрута ленту и список не перерисовываем
+  if (idleFor !== c.id) {
+    idleFor = c.id;
+    const items = Array.from({ length: 15 }, () => pickCar(c));
+    const track = $('#stripTrack');
+    track.style.transition = 'none'; track.innerHTML = items.map(x => slotHTML(x, c)).join('');
+    setTrack(7 * SLOT_STEP + SLOT_W / 2);
+    $('#contResult').innerHTML = '';
+  }
+  $('#contInfo').innerHTML = BRIDGE
+    ? `Редактирование: файл <b>my_containers.txt</b> в папке PlatesGame (шансы, машины, картинки, цена контейнера)` + (contErrors ? ` · строк с ошибкой: <b>${contErrors}</b>` : '')
+    : 'Редактирование: файл containers.js (в приложении ещё и my_containers.txt в папке PlatesGame)';
+  const sorted = c.cars.slice().sort((a, b) => b.chance - a.chance);
+  $('#contList').innerHTML = sorted.map(x => `<div class="crow rar-${slotClass(x, c)}"><div class="pic">${carImg(x)}</div><div class="cn">${esc(x.name)}<small>${fmt(x.price)}</small></div><div class="cp">${pctStr(x, c)}</div></div>`).join('');
+}
+
+function openContainer(){
+  if (busyC) return;
+  const c = curContObj(); if (!c || !c.cars.length) return;
+  if (S.money < c.price) { toast('Не хватает ' + fmt(c.price - S.money)); sErr(); return; }
+  busyC = true;
+  S.money -= c.price;
+  const winner = pickCar(c);
+  const xid = 'x' + (++S.xseq);
+  S.xcars.push({ id: xid, name: winner.name, price: winner.price, cat: '', imgs: carImgList(winner) });
+  save();
+  renderMoney('down'); renderBadges(); renderCont();
+  $('#contResult').innerHTML = '';
+  sBuy();
+
+  // лента: случайные машины, выигрышная стоит на 50-м месте
+  const WIN = 50, N = WIN + 8;
+  const items = Array.from({ length: N }, () => pickCar(c)); items[WIN] = winner;
+  const track = $('#stripTrack');
+  track.style.transition = 'none';
+  track.innerHTML = items.map(x => slotHTML(x, c)).join('');
+  const p0 = 3 * SLOT_STEP + SLOT_W / 2;
+  const jitter = (Math.random() - .5) * SLOT_W * .7;      // остановка не всегда ровно по центру слота
+  const p1 = WIN * SLOT_STEP + SLOT_W / 2 + jitter;
+  setTrack(p0);
+  const DUR = 3000, t0 = performance.now();
+  let lastIdx = -1;
+  (function frame(now){
+    const k = Math.min(1, (now - t0) / DUR);
+    const e = 1 - Math.pow(1 - k, 3.4);                    // быстро в начале, плавное торможение к концу
+    const pos = p0 + (p1 - p0) * e;
+    setTrack(pos);
+    const idx = Math.floor(pos / SLOT_STEP);
+    if (idx !== lastIdx) { lastIdx = idx; sTick(); }
+    if (k < 1) { requestAnimationFrame(frame); return; }
+    finish();
+  })(t0);
+
+  function finish(){
+    busyC = false;
+    const slot = track.children[WIN]; if (slot) slot.classList.add('win');
+    const cls = slotClass(winner, c);
+    sWin(cls === 'legendary' ? 'legendary' : cls); vibrate(cls === 'legendary' ? [40, 60, 40, 60, 120] : [25]);
+    if (cls === 'legendary' || cls === 'epic') {
+      const r = $('#stripView').getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, cls === 'legendary' ? 150 : 80);
+    }
+    $('#contResult').innerHTML = `<div class="cres rar-${cls}"><div class="pic">${carImg(winner)}</div><div class="ci"><b>${esc(winner.name)}</b><span>${fmt(winner.price)} · шанс ${pctStr(winner, c)}</span><small>Машина уже в гараже</small></div>` +
+      `<button class="btn ghost" data-act="sellnow" data-cid="${xid}">Продать<br><small>${fmt(winner.price * SELL_RATE)}</small></button></div>`;
+    renderAll();
+  }
+}
+function sellNow(xid){
+  const i = S.xcars.findIndex(x => x.id === xid); if (i < 0) return;
+  const x = S.xcars[i], get = Math.round(x.price * SELL_RATE);
+  S.xcars.splice(i, 1); S.money += get; releasePlate(xid); save();
+  $('#contResult').innerHTML = '';
+  toast('+ ' + fmt(get)); renderAll('up');
+}
+
+/* =========================================================
+   ГАРАЖ: машины и номера на них
+   ========================================================= */
+function releasePlate(key){ const p = S.cplates[key]; if (p) { S.collection.push(p); delete S.cplates[key]; } }
+function onCar(p){ return Object.values(S.cplates).some(q => q.id === p.id); }
+function renderGarage(){
+  const list = $('#garList'); if (!list) return;
+  const gar = garageItems(), top = list.scrollTop;
+  $('#garSum').innerHTML = `${gar.length} шт.<b>${fmt(gar.reduce((t, g) => t + g.price, 0))}</b>`;
+  list.style.setProperty('--sc', '#c9d1ff');
+  list.innerHTML = gar.length ? gar.map(g => {
+    const pl = S.cplates[g.key];
+    return `<div class="car"><div class="pic">${carImg(g.c)}${pl ? `<div class="onplate">${plateEl(pl, 'sm').outerHTML}</div>` : ''}</div>` +
+      `<div class="info"><div class="nm">${esc(g.c.name)}<span class="pr">${fmt(g.price)}</span></div><div class="gb">` +
+      `<button class="btn safe" data-act="plate" data-cid="${esc(g.key)}">${pl ? 'Снять номер' : '🔢 Повесить номер'}</button>${sellBtn(g.sellAct, g.key, g.price)}</div></div></div>`;
+  }).join('') : '<div class="empty">Гараж пуст.<br>Купите машину в автосалоне или выбейте её в контейнере.</div>';
+  list.scrollTop = top;
+}
+function plateAction(key){
+  if (S.cplates[key]) { releasePlate(key); save(); toast('Номер снят, он в коллекции'); renderAll(); return; }
+  const rows = [...S.collection.map(p => ({ p, safe: false })), ...S.safe.map(p => ({ p, safe: true }))].sort((a, b) => b.p.val - a.p.val);
+  if (!rows.length) { toast('Нет номеров в коллекции и сейфе'); sErr(); return; }
+  const box = $('#mbox');
+  box.innerHTML = '<h3>Выберите номер</h3><div class="picker">' +
+    rows.map(r => `<button class="prow" data-pk="${r.p.id}">${plateEl(r.p, 'sm').outerHTML}<span class="pv">${fmt(r.p.val)}${r.safe ? ' 🔒' : ''}</span></button>`).join('') +
+    '</div><div class="row"><button class="btn ghost" data-pk="0">Отмена</button></div>';
+  box.onclick = e => {
+    const b = e.target.closest('[data-pk]'); if (!b) return;
+    $('#modal').classList.remove('on'); box.onclick = null;
+    const pid = +b.dataset.pk; if (!pid) return;
+    let i = find(S.collection, pid), p;
+    if (i >= 0) p = S.collection.splice(i, 1)[0];
+    else { i = find(S.safe, pid); if (i < 0) return; p = S.safe.splice(i, 1)[0]; }
+    releasePlate(key); S.cplates[key] = p; save();
+    toast('🔢 Номер на машине'); renderAll('down');
+  };
+  $('#modal').classList.add('on');
 }
 
 /* =========================================================
@@ -914,24 +1207,26 @@ function applyGiveLine(line){
     if (cmd.includes('номер')) {
       let n = 0;
       const keep = (arr, drop) => arr.filter(p => { const d = drop(p); if (d) n++; return !d; });
-      if (target.startsWith('все') || target.startsWith('всё')) { n = S.collection.length + S.safe.length; S.collection = []; S.safe = []; }
+      if (target.startsWith('все') || target.startsWith('всё')) { n = S.collection.length + S.safe.length + Object.keys(S.cplates).length; S.collection = []; S.safe = []; S.cplates = {}; }
       else if (target.startsWith('колл')) { n = S.collection.length; S.collection = []; }
       else if (target.startsWith('сейф')) { n = S.safe.length; S.safe = []; }
       else {
         const p = plateFromString(f[1]); if (!p) return err('не похоже на номер (пример А777АА77)');
         const k = plateKey(p), hit = q => plateKey(q) === k;
         S.collection = keep(S.collection, hit); S.safe = keep(S.safe, hit);
+        Object.keys(S.cplates).forEach(key => { if (hit(S.cplates[key])) { delete S.cplates[key]; n++; } });
       }
       if (S.last && !S.collection.some(p => p.id === S.last.id) && !S.safe.some(p => p.id === S.last.id)) S.last = null;
       return n ? { removed: n } : err('такого номера нет');
     }
     if (cmd.includes('машин')) {
       let n = 0;
-      if (target.startsWith('все') || target.startsWith('всё')) { n = S.cars.length + S.xcars.length; S.cars = []; S.xcars = []; }
+      if (target.startsWith('все') || target.startsWith('всё')) { n = S.cars.length + S.xcars.length; [...S.cars, ...S.xcars.map(x => x.id)].forEach(releasePlate); S.cars = []; S.xcars = []; }
       else {
         const q = target;
         const ids = CARS.filter(c => c.id.toLowerCase() === q || c.name.toLowerCase() === q).map(c => c.id);
         const before = S.cars.length + S.xcars.length;
+        [...S.cars.filter(id => ids.includes(id)), ...S.xcars.filter(x => x.name.toLowerCase() === q).map(x => x.id)].forEach(releasePlate);
         S.cars = S.cars.filter(id => !ids.includes(id));
         S.xcars = S.xcars.filter(x => x.name.toLowerCase() !== q);
         n = before - S.cars.length - S.xcars.length;
@@ -1012,7 +1307,7 @@ function snapshotText(){
     ...S.safe.slice().sort((a, b) => b.val - a.val).map(pl),
     '',
     `[ГАРАЖ] ${gar.length} шт., на ${fmt(gar.reduce((t, g) => t + g.price, 0))}`,
-    ...gar.map(g => `${g.c.name} | ${fmt(g.price)}`),
+    ...gar.map(g => `${g.c.name} | ${fmt(g.price)}` + (S.cplates[g.key] ? ` | номер ${S.cplates[g.key].l1}${S.cplates[g.key].d}${S.cplates[g.key].l2}${S.cplates[g.key].r}` : '')),
     ''
   ].join('\n');
 }
@@ -1025,8 +1320,15 @@ function scheduleExport(){
 
 function tab(name){
   if (name === 'cars') renderCars();
+  if (name === 'cont') renderCont();
+  if (name === 'garage') renderGarage();
   document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === 'screen-' + name));
-  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  const nav = document.querySelector('nav');
+  document.querySelectorAll('nav button').forEach(b => {
+    const on = b.dataset.tab === name;
+    b.classList.toggle('active', on);
+    if (on && nav.scrollWidth > nav.clientWidth) nav.scrollTo({ left: b.offsetLeft - (nav.clientWidth - b.offsetWidth) / 2, behavior: 'smooth' });
+  });
 }
 let toastT;
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 1400); }
@@ -1046,12 +1348,31 @@ function menu(){
   const best = b ? `Самый дорогой номер: ${b.l1}${b.d}${b.l2} ${b.r} — ${fmt(b.val)}` : 'Пока нет данных.';
   modal('Статистика', `Прокрутов: ${S.rolls}\nМашин в гараже: ${S.cars.length}\n${best}\n\nИзвестные номера и спецсерии взяты из открытых источников. Игра неофициальная и сделана для развлечения.`, [
     { label: 'Начать заново', cls: 'danger', fn: () => modal('Начать заново?', 'Весь прогресс, коллекция и сейф будут стёрты.', [{ label: 'Да, стереть', cls: 'danger', fn: resetGame }, { label: 'Отмена', cls: 'ghost' }]) },
+    { label: SND.on ? '🔊 Звук: вкл' : '🔇 Звук: выкл', cls: 'ghost', fn: () => {
+      SND.on = !SND.on; try { localStorage.setItem('plates_snd', SND.on ? '1' : '0'); } catch (e) {}
+      toast(SND.on ? '🔊 Звук включён' : '🔇 Звук выключен'); sClick();
+    } },
+    ...(BRIDGE ? [{ label: '🛠 Код игры', cls: 'ghost', fn: devMenu }] : []),
     { label: 'Закрыть', cls: 'ghost' }]);
+}
+function devMenu(){
+  let custom = false; try { custom = BRIDGE.hasCustomCode(); } catch (e) {}
+  modal('Правка кода', (custom ? 'Сейчас игра загружается из вашего файла index.html в папке PlatesGame.\n\n' : 'Сейчас используется встроенная версия игры.\n\n') +
+    'Нажмите «Вынести код в папку», откройте PlatesGame/index.html любым редактором, поправьте и перезапустите игру. ' +
+    'Если игра перестала запускаться, удалите файл index.html из папки PlatesGame. После обновления APK тоже нажмите «Вернуть оригинал», иначе останется старая версия.',
+    [{ label: 'Вынести код в папку', cls: 'sell', fn: () => { let ok = false; try { ok = BRIDGE.exportCode(); } catch (e) {} toast(ok ? 'Готово: PlatesGame/index.html' : 'Не удалось записать файл'); } },
+     { label: 'Вернуть оригинал', cls: 'danger', fn: () => { let ok = false; try { ok = BRIDGE.resetCode(); } catch (e) {} toast(ok ? 'Вернулась встроенная версия' : 'Не удалось удалить файл'); if (ok) setTimeout(() => location.reload(), 700); } },
+     { label: 'Закрыть', cls: 'ghost' }]);
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-act],[data-bulk],[data-salon],[data-reload],[data-access],#menuBtn');
+  if (e.target.closest('button')) sClick();
+  const t = e.target.closest('[data-tab],[data-act],[data-bulk],[data-salon],[data-cont],[data-reload],[data-access],#menuBtn,#openBtn');
   if (t) {
+    if (t.id === 'openBtn') return openContainer();
+    if (t.dataset.cont) { if (busyC) return; curCont = t.dataset.cont; idleFor = null; $('#contScroll').scrollTop = 0; return renderCont(); }
+    if (t.dataset.act === 'plate') return plateAction(t.dataset.cid);
+    if (t.dataset.act === 'sellnow') return sellNow(t.dataset.cid);
     if (t.dataset.reload) { location.reload(); return; }
     if (t.dataset.access) { try { BRIDGE && BRIDGE.requestAccess(); } catch (e) {} return; }
     if (t.dataset.salon) { curSalon = t.dataset.salon; $('#carList').scrollTop = 0; return renderCars(); }
@@ -1069,6 +1390,7 @@ document.addEventListener('click', e => {
   if (e.target.closest('#screen-play') && !e.target.closest('button')) roll();
 });
 
+loadConts();
 processGive();
 renderAll();
 if (BRIDGE) scheduleExport();
@@ -1081,7 +1403,7 @@ window.__back = function(){
   return false;
 };
 if (location.hash === '#lucky') SPECIAL_CHANCE = 0.5;   // тест: известные номера выпадают часто
-window.__dbg = { get S(){ return S; }, roll, valuate, rarityOf, legendary: () => locked };
+window.__dbg = { get S(){ return S; }, roll, valuate, rarityOf, legendary: () => locked, openContainer, get CONTS(){ return CONTS; }, buildConts, busy: () => busyC };
 </script>
 </body>
 </html>

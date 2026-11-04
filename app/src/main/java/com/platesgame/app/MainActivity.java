@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
                 }
             }
             File names = new File(cars, "СПИСОК_ИМЁН.txt");
-            if (!names.exists()) {
+            {
                 try (InputStream in = getAssets().open("cars/README.txt");
                      FileOutputStream out = new FileOutputStream(names)) {
                     byte[] buf = new byte[4096];
@@ -144,7 +144,7 @@ public class MainActivity extends Activity {
             String prefix = "/android_asset/";
             if (path == null || !path.startsWith(prefix)) return null;
             String rel = path.substring(prefix.length());
-            if (!(rel.equals("cars.js") || rel.startsWith("cars/"))) return null;
+            if (!(rel.equals("index.html") || rel.equals("cars.js") || rel.equals("containers.js") || rel.startsWith("cars/"))) return null;
 
             File dir = dataDir();
             File f = new File(dir, rel);
@@ -199,7 +199,7 @@ public class MainActivity extends Activity {
 
         // читать и писать можно только эти три файла в папке PlatesGame
         private boolean allowed(String name) {
-            return "my_cars.txt".equals(name) || "give.txt".equals(name) || "save.txt".equals(name);
+            return "my_cars.txt".equals(name) || "my_containers.txt".equals(name) || "give.txt".equals(name) || "save.txt".equals(name);
         }
 
         @JavascriptInterface
@@ -235,6 +235,35 @@ public class MainActivity extends Activity {
             } catch (IOException e) {
                 return false;
             }
+        }
+
+        // Режим правки кода: копия index.html из приложения кладётся в PlatesGame и дальше загружается оттуда
+        @JavascriptInterface
+        public boolean exportCode() {
+            try {
+                File dir = dataDir();
+                if (!dir.exists()) dir.mkdirs();
+                try (InputStream in = getAssets().open("index.html");
+                     FileOutputStream out = new FileOutputStream(new File(dir, "index.html"))) {
+                    byte[] buf = new byte[8192];
+                    int n;
+                    while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+                }
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
+        }
+
+        @JavascriptInterface
+        public boolean resetCode() {
+            File f = new File(dataDir(), "index.html");
+            return !f.exists() || f.delete();
+        }
+
+        @JavascriptInterface
+        public boolean hasCustomCode() {
+            return new File(dataDir(), "index.html").isFile();
         }
 
         @JavascriptInterface

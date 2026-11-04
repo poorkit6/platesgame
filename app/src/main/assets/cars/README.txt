@@ -1,9 +1,8 @@
-Сюда кладите картинки машин. Имя файла = id машины из файла cars.js + расширение (.jpg, .jpeg, .png или .webp).
+Сюда кладите картинки машин. Имя файла = id машины + расширение (.jpg, .jpeg, .png или .webp).
 Например: vaz-2107.jpg
+Для машин, которых нет в списках ниже, имя файла указывается в my_cars.txt / my_containers.txt.
 
-Список файлов для стартовых машин:
-
-Низкий класс:
+Автосалон, Низкий класс:
   vaz-2107.jpg  - ВАЗ-2107
   vaz-2114.jpg  - ВАЗ-2114
   daewoo-nexia.jpg  - Daewoo Nexia
@@ -14,7 +13,7 @@
   vw-passat-b3.jpg  - Volkswagen Passat B3
   bmw-e30.jpg  - BMW 3 Series (E30)
 
-Средний класс:
+Автосалон, Средний класс:
   honda-civic-ek9.jpg  - Honda Civic EK9
   toyota-mark2-jzx100.jpg  - Toyota Mark II (JZX100)
   nissan-laurel-c35.jpg  - Nissan Laurel C35
@@ -27,7 +26,8 @@
   nissan-skyline-hr34.jpg  - Nissan Skyline HR34
   bmw-m3-e36.jpg  - BMW M3 (E36)
 
-Высокий класс:
+Автосалон, Высокий класс:
+  my-car.jpg  - Моя машина
   bmw-g20.jpg  - BMW 3 Series (G20)
   audi-rs6-c7.jpg  - Audi RS6 Avant (C7)
   mercedes-e63-w212.jpg  - Mercedes-Benz E 63 AMG (W212 Рестайлинг)
@@ -40,7 +40,7 @@
   porsche-panamera-gts.jpg  - Porsche Panamera GTS
   mercedes-g63.jpg  - Mercedes-Benz G 63 AMG
 
-Премиум класс:
+Автосалон, Премиум класс:
   bmw-m8-manhart-mh8.jpg  - BMW M8 Competition Manhart MH8
   bmw-m5-f90-cs-level.jpg  - BMW M5 F90 CS Level
   audi-rs6-c8-mansory.jpg  - Audi RS6 C8 Mansory Edition
@@ -51,7 +51,7 @@
   lamborghini-urus-mansory-venatus.jpg  - Lamborghini Urus Mansory Venatus
   rolls-royce-cullinan-mansory.jpg  - Rolls-Royce Cullinan Mansory
 
-Эксклюзив:
+Автосалон, Эксклюзив:
   porsche-911-gt2-rs-clubsport-25.jpg  - Porsche 911 GT2 RS Clubsport 25
   mclaren-senna-gtr.jpg  - McLaren Senna GTR
   pagani-zonda-r.jpg  - Pagani Zonda R
@@ -61,3 +61,36 @@
   bugatti-divo.jpg  - Bugatti Divo
   ferrari-fxx-k-evo.jpg  - Ferrari FXX K Evo
   bugatti-centodieci.jpg  - Bugatti Centodieci
+
+Контейнер Немецкий:
+  vw-golf-gti-mk7.jpg  - Volkswagen Golf GTI (Mk7)
+  audi-a4-b8.jpg  - Audi A4 (B8)
+  bmw-m135i-f20.jpg  - BMW M135i (F20)
+  mercedes-c63-w204.jpg  - Mercedes-Benz C 63 AMG (W204)
+  audi-rs3-8v.jpg  - Audi RS3 (8V)
+  mercedes-a45s.jpg  - Mercedes-AMG A 45 S
+  porsche-cayman-gt4.jpg  - Porsche Cayman GT4
+  mercedes-amg-gtr.jpg  - Mercedes-AMG GT R
+  porsche-911-gt3rs-991.jpg  - Porsche 911 GT3 RS (991.2)
+
+Контейнер Японский:
+  nissan-180sx.jpg  - Nissan 180SX
+  mazda-rx8.jpg  - Mazda RX-8
+  honda-s2000.jpg  - Honda S2000
+  nissan-silvia-s15.jpg  - Nissan Silvia S15
+  nissan-skyline-r32-gtr.jpg  - Nissan Skyline GT-R (R32)
+  mazda-rx7-fd.jpg  - Mazda RX-7 (FD)
+  toyota-supra-a80.jpg  - Toyota Supra (A80)
+  honda-nsx-na1.jpg  - Honda NSX (NA1)
+  lexus-lfa.jpg  - Lexus LFA
+
+Контейнер Американский:
+  dodge-charger-rt.jpg  - Dodge Charger R/T
+  chevrolet-camaro-ss.jpg  - Chevrolet Camaro SS
+  ford-mustang-gt.jpg  - Ford Mustang GT
+  cadillac-escalade.jpg  - Cadillac Escalade
+  ford-mustang-shelby-gt500.jpg  - Ford Mustang Shelby GT500
+  dodge-challenger-hellcat.jpg  - Dodge Challenger SRT Hellcat
+  chevrolet-corvette-c7-z06.jpg  - Chevrolet Corvette C7 Z06
+  dodge-viper-acr.jpg  - Dodge Viper ACR
+  ford-gt-2017.jpg  - Ford GT (2017)
