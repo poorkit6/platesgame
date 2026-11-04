@@ -975,17 +975,17 @@ const CONT_TEMPLATE = `# СВОЁ СОДЕРЖИМОЕ КОНТЕЙНЕРОВ
 # Игра читает файл при запуске и по кнопке «Обновить» на вкладке «Контейнеры».
 #
 # ДОБАВИТЬ ИЛИ ИЗМЕНИТЬ МАШИНУ:   контейнер | шанс | название | цена | файл картинки
-#   контейнер: немецкий, японский или американский
+#   контейнер: немецкий, японский, американский или мажорский
 #   шанс: число. Чем больше, тем чаще выпадает. Доля машины = её шанс / сумма шансов в контейнере
 #         (в стартовых контейнерах сумма равна 100, поэтому шанс совпадает с процентами)
 #   цена и файл картинки не обязательны. Картинку положите в папку cars.
-#   Если машина с таким названием уже есть, заменятся её шанс, цена и картинка.
+#   Для новой машины цена обязательна. Если машина с таким названием уже есть, заменятся её шанс, цена и картинка.
 #   Шанс 0 убирает машину из контейнера.
 # ЦЕНА КОНТЕЙНЕРА:                цена | немецкий | 5 000 000
 #
 # Примеры (уберите # в начале строки, чтобы включить):
-# немецкий | 3 | Моя немка | 15 000 000 | my-de.jpg
-# японский | 0 | Honda S2000
+# мажорский | 5 | Моя немка | 15 000 000 | my-de.jpg
+# мажорский | 20 | Другая машина | 4 500 000 | other.jpg
 # цена | американский | 4 000 000
 `;
 let contErrors = 0, CONTS = [];
@@ -1045,7 +1045,7 @@ function setTrack(pos){ $('#stripTrack').style.transform = 'translate3d(' + (-po
 function renderCont(){
   const tabs = $('#contTabs'); if (!tabs) return;
   const btn = $('#openBtn');
-  if (!CONTS.length || !CONTS.some(c => c.cars.length)) {
+  if (!CONTS.length) {
     tabs.innerHTML = ''; btn.hidden = true;
     $('#contList').innerHTML = '<div class="empty">Нет контейнеров. Проверьте файл containers.js.</div>'; return;
   }
@@ -1055,11 +1055,11 @@ function renderCont(){
   tabs.innerHTML = CONTS.map(x => `<button class="chip${x.id === curCont ? ' active' : ''}" style="--sc:${x.color || '#ffd34e'}" data-cont="${esc(x.id)}">${x.flag || ''} ${esc(x.name)}</button>`).join('') +
     (BRIDGE ? '<button class="chip" style="--sc:#c9d1ff" data-reload="1">⟳ Обновить</button>' : '');
   btn.textContent = busyC ? 'Идёт прокрут…' : `Открыть за ${fmt(c.price)}`;
-  btn.className = 'btn openbtn ' + (S.money >= c.price && !busyC ? 'sell' : 'ghost');
+  btn.className = 'btn openbtn ' + (S.money >= c.price && !busyC && c.cars.length ? 'sell' : 'ghost');
   if (busyC) return;                        // во время прокрута ленту и список не перерисовываем
   if (idleFor !== c.id) {
     idleFor = c.id;
-    const items = Array.from({ length: 15 }, () => pickCar(c));
+    const items = c.cars.length ? Array.from({ length: 15 }, () => pickCar(c)) : [];
     const track = $('#stripTrack');
     track.style.transition = 'none'; track.innerHTML = items.map(x => slotHTML(x, c)).join('');
     setTrack(7 * SLOT_STEP + SLOT_W / 2);
@@ -1069,12 +1069,13 @@ function renderCont(){
     ? `Редактирование: файл <b>my_containers.txt</b> в папке PlatesGame (шансы, машины, картинки, цена контейнера)` + (contErrors ? ` · строк с ошибкой: <b>${contErrors}</b>` : '')
     : 'Редактирование: файл containers.js (в приложении ещё и my_containers.txt в папке PlatesGame)';
   const sorted = c.cars.slice().sort((a, b) => b.chance - a.chance);
-  $('#contList').innerHTML = sorted.map(x => `<div class="crow rar-${slotClass(x, c)}"><div class="pic">${carImg(x)}</div><div class="cn">${esc(x.name)}<small>${fmt(x.price)}</small></div><div class="cp">${pctStr(x, c)}</div></div>`).join('');
+  $('#contList').innerHTML = !sorted.length ? '<div class="empty">Контейнер пуст.<br>Добавьте машины в файл my_containers.txt<br>(папка PlatesGame), строка: <b>' + esc(c.name.toLowerCase()) + ' | шанс | название | цена | файл.jpg</b></div>' : sorted.map(x => `<div class="crow rar-${slotClass(x, c)}"><div class="pic">${carImg(x)}</div><div class="cn">${esc(x.name)}<small>${fmt(x.price)}</small></div><div class="cp">${pctStr(x, c)}</div></div>`).join('');
 }
 
 function openContainer(){
   if (busyC) return;
-  const c = curContObj(); if (!c || !c.cars.length) return;
+  const c = curContObj(); if (!c) return;
+  if (!c.cars.length) { toast('Контейнер пуст: добавьте машины'); sErr(); return; }
   if (S.money < c.price) { toast('Не хватает ' + fmt(c.price - S.money)); sErr(); return; }
   busyC = true;
   S.money -= c.price;

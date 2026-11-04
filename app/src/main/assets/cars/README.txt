@@ -62,35 +62,5 @@
   ferrari-fxx-k-evo.jpg  - Ferrari FXX K Evo
   bugatti-centodieci.jpg  - Bugatti Centodieci
 
-Контейнер Немецкий:
-  vw-golf-gti-mk7.jpg  - Volkswagen Golf GTI (Mk7)
-  audi-a4-b8.jpg  - Audi A4 (B8)
-  bmw-m135i-f20.jpg  - BMW M135i (F20)
-  mercedes-c63-w204.jpg  - Mercedes-Benz C 63 AMG (W204)
-  audi-rs3-8v.jpg  - Audi RS3 (8V)
-  mercedes-a45s.jpg  - Mercedes-AMG A 45 S
-  porsche-cayman-gt4.jpg  - Porsche Cayman GT4
-  mercedes-amg-gtr.jpg  - Mercedes-AMG GT R
-  porsche-911-gt3rs-991.jpg  - Porsche 911 GT3 RS (991.2)
 
-Контейнер Японский:
-  nissan-180sx.jpg  - Nissan 180SX
-  mazda-rx8.jpg  - Mazda RX-8
-  honda-s2000.jpg  - Honda S2000
-  nissan-silvia-s15.jpg  - Nissan Silvia S15
-  nissan-skyline-r32-gtr.jpg  - Nissan Skyline GT-R (R32)
-  mazda-rx7-fd.jpg  - Mazda RX-7 (FD)
-  toyota-supra-a80.jpg  - Toyota Supra (A80)
-  honda-nsx-na1.jpg  - Honda NSX (NA1)
-  lexus-lfa.jpg  - Lexus LFA
-
-Контейнер Американский:
-  dodge-charger-rt.jpg  - Dodge Charger R/T
-  chevrolet-camaro-ss.jpg  - Chevrolet Camaro SS
-  ford-mustang-gt.jpg  - Ford Mustang GT
-  cadillac-escalade.jpg  - Cadillac Escalade
-  ford-mustang-shelby-gt500.jpg  - Ford Mustang Shelby GT500
-  dodge-challenger-hellcat.jpg  - Dodge Challenger SRT Hellcat
-  chevrolet-corvette-c7-z06.jpg  - Chevrolet Corvette C7 Z06
-  dodge-viper-acr.jpg  - Dodge Viper ACR
-  ford-gt-2017.jpg  - Ford GT (2017)
+Контейнеры: свои машины добавляются строками в my_containers.txt, файл картинки кладите сюда, в папку cars.
