@@ -452,6 +452,9 @@ function valuate(p, rnd){
 
 // «Подкрутка»: с небольшим шансом выпадает известный номер или номер из спецсерии
 let SPECIAL_CHANCE = 0.0015;
+// Шанс «красивых» цифр на обычном номере (777, 001, 007, 111 и т.п.). Поднимите, чтобы чаще выпадали обычные легендарные.
+let NICE_CHANCE = 0.012;
+const NICE_DIGITS = ['777','777','777','111','222','333','444','555','666','888','999','001','001','007','007','100','200','300','500','700','800','900','123','321','101','555'];
 function genSpecial(){
   const x = Math.random();
   const rd = (a, b) => String(a + Math.floor(Math.random() * (b - a + 1))).padStart(3, '0');
@@ -638,7 +641,9 @@ function countUp(el, to, ms){
 let spinning = false, locked = false;
 function genPlate(){
   if (Math.random() < SPECIAL_CHANCE) return genSpecial();
-  let d; do { d = String(Math.floor(Math.random() * 1000)).padStart(3, '0'); } while (d === '000');
+  let d;
+  if (Math.random() < NICE_CHANCE) d = NICE_DIGITS[Math.floor(Math.random() * NICE_DIGITS.length)];   // красивые цифры, буквы и регион всё равно случайные
+  else do { d = String(Math.floor(Math.random() * 1000)).padStart(3, '0'); } while (d === '000');
   const pick = () => LET[Math.floor(Math.random() * LET.length)];
   return { l1: pick(), d, l2: pick() + pick(), r: REGIONS[Math.floor(Math.random() * REGIONS.length)] };
 }
