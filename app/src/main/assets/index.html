@@ -984,15 +984,20 @@ const CONT_TEMPLATE = `# СВОЁ СОДЕРЖИМОЕ КОНТЕЙНЕРОВ
 #   шанс: число. Чем больше, тем чаще выпадает. Доля машины = её шанс / сумма шансов в контейнере
 #         (в стартовых контейнерах сумма равна 100, поэтому шанс совпадает с процентами)
 #   цена и файл картинки не обязательны. Картинку положите в папку cars.
+#   РЕДКОСТЬ (цвет) можно задать словом в конце строки: обычная, редкая, эпическая или легендарная
+#   (или цветом: серая, синяя, фиолетовая, жёлтая). Без слова цвет считается по доле шанса:
+#   меньше 1.5% жёлтый, до 5% фиолетовый, до 15% синий, дальше серый.
 #   Для новой машины цена обязательна. Если машина с таким названием уже есть, заменятся её шанс, цена и картинка.
 #   Шанс 0 убирает машину из контейнера.
 # ЦЕНА КОНТЕЙНЕРА:                цена | немецкий | 5 000 000
 #
 # Примеры (уберите # в начале строки, чтобы включить):
 # мажорский | 5 | Моя немка | 15 000 000 | my-de.jpg
-# мажорский | 20 | Другая машина | 4 500 000 | other.jpg
+# мажорский | 20 | Другая машина | 4 500 000 | other.jpg | эпическая
+# мажорский | 1 | Редкая машина | 90 000 000 | rare.jpg | легендарная
 # цена | американский | 4 000 000
 `;
+const RAR_WORDS = [['обыч', 'common'], ['сер', 'common'], ['ред', 'rare'], ['син', 'rare'], ['эпи', 'epic'], ['фиол', 'epic'], ['леген', 'legendary'], ['жёл', 'legendary'], ['жел', 'legendary']];
 let contErrors = 0, CONTS = [];
 function buildConts(text){
   const base = (window.CONTAINERS || []).map(c => Object.assign({}, c, { cars: c.cars.map(x => Object.assign({}, x)) }));
@@ -1010,14 +1015,21 @@ function buildConts(text){
     const ch = parseFloat((f[1] || '').replace(',', '.').replace(/\s/g, ''));
     const name = f[2];
     if (!c || !(ch >= 0) || !name) { contErrors++; return; }
+    // редкость можно написать в любом поле после названия: обычная, редкая, эпическая, легендарная
+    let rar = '';
+    for (let i = 3; i < f.length; i++) {
+      const w = (f[i] || '').toLowerCase();
+      const r = RAR_WORDS.find(([k]) => w && w.startsWith(k));
+      if (r) { rar = r[1]; f[i] = ''; }
+    }
     const pr = parsePrice(f[3]), file = f[4];
     const ex = c.cars.find(x => x.name.toLowerCase() === name.toLowerCase() || x.id === name);
     if (ex) {
-      ex.chance = ch; if (pr > 0) ex.price = pr;
+      ex.chance = ch; if (pr > 0) ex.price = pr; if (rar) ex.rar = rar;
       if (file) ex.imgs = ['cars/' + encodeURIComponent(file)].concat(carImgList({ id: ex.id }));
     } else {
       if (!(pr > 0)) { contErrors++; return; }
-      c.cars.push({ id: 'c:' + name, name, price: pr, chance: ch, imgs: nameImgs(name, file) });
+      c.cars.push({ id: 'c:' + name, name, price: pr, chance: ch, imgs: nameImgs(name, file), rar });
     }
   });
   base.forEach(c => { c.cars = c.cars.filter(x => x.chance > 0); });
@@ -1038,7 +1050,7 @@ function pickCar(c){
   for (const x of c.cars) { r -= x.chance; if (r <= 0) return x; }
   return c.cars[c.cars.length - 1];
 }
-const slotClass = (x, c) => { const p = x.chance / contTotal(c) * 100; return p >= 15 ? 'common' : p >= 5 ? 'rare' : p >= 1.5 ? 'epic' : 'legendary'; };
+const slotClass = (x, c) => { if (x.rar) return x.rar; const p = x.chance / contTotal(c) * 100; return p >= 15 ? 'common' : p >= 5 ? 'rare' : p >= 1.5 ? 'epic' : 'legendary'; };
 function pctStr(x, c){
   const p = x.chance / contTotal(c) * 100;
   return (p >= 10 ? p.toFixed(0) : p >= 1 ? p.toFixed(1) : p.toFixed(2)).replace(/\.0+$/, '') + '%';
