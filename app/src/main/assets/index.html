@@ -9,7 +9,7 @@
 :root{
   --bg1:#0e1120;--bg2:#1a1f3a;--card:#222845;--card2:#2b3254;--line:#ffffff1a;
   --text:#eef0ff;--dim:#9aa2c8;--gold:#ffc94a;--green:#5be3a0;--red:#ff6b7d;
-  --c-common:#9aa3ad;--c-rare:#4aa3ff;--c-epic:#b565ff;--c-legendary:#ffc94a;
+  --c-common:#9aa3ad;--c-rare:#4aa3ff;--c-epic:#b565ff;--c-legendary:#ffc94a;--c-collector:#ff1f3d;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 html,body{margin:0;height:100%;background:var(--bg1);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden;touch-action:manipulation}
@@ -178,16 +178,16 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 .strip-line{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--gold);box-shadow:0 0 10px var(--gold);z-index:3}
 .strip-track{position:absolute;left:50%;top:10px;display:flex;gap:8px;will-change:transform}
 .slot{flex:0 0 112px;width:112px;height:130px;border-radius:12px;background:var(--card);border:2px solid var(--rc,var(--c-common));overflow:hidden;display:flex;flex-direction:column}
-.slot.rar-common{--rc:var(--c-common)}.slot.rar-rare{--rc:var(--c-rare)}.slot.rar-epic{--rc:var(--c-epic)}.slot.rar-legendary{--rc:var(--c-legendary)}
-.slot .pic{height:62px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rc),#161b34 90%);position:relative}
+.slot.rar-common{--rc:var(--c-common)}.slot.rar-rare{--rc:var(--c-rare)}.slot.rar-epic{--rc:var(--c-epic)}.slot.rar-legendary{--rc:var(--c-legendary)}.slot.rar-collector{--rc:var(--c-collector)}
+.slot .pic{flex:0 0 62px;height:62px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--rc),#161b34 90%);position:relative}
 .slot .pic img{width:100%;height:100%;object-fit:cover;display:block}
 .slot .pic svg{width:70%}
-.slot .sn{font-size:11px;font-weight:800;line-height:1.15;padding:5px 6px 0;height:2.7em;overflow:hidden}
+.slot .sn{flex:0 0 auto;font-size:11px;font-weight:800;line-height:1.15;padding:5px 6px 0;height:2.7em;overflow:hidden}
 .slot .sp{font-size:11px;color:var(--gold);font-weight:800;padding:0 6px}
 .slot.win{box-shadow:0 0 0 3px #fff,0 0 24px var(--rc);transform:scale(1.05)}
 .openbtn{width:100%;padding:16px;font-size:17px;margin-bottom:12px}
 .cres{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:16px;padding:10px;margin-bottom:12px;border:2px solid var(--rc,var(--c-common))}
-.cres.rar-common{--rc:var(--c-common)}.cres.rar-rare{--rc:var(--c-rare)}.cres.rar-epic{--rc:var(--c-epic)}.cres.rar-legendary{--rc:var(--c-legendary)}
+.cres.rar-common{--rc:var(--c-common)}.cres.rar-rare{--rc:var(--c-rare)}.cres.rar-epic{--rc:var(--c-epic)}.cres.rar-legendary{--rc:var(--c-legendary)}.cres.rar-collector{--rc:var(--c-collector)}
 .cres .pic{width:96px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;flex:0 0 auto;background:linear-gradient(135deg,var(--rc),#161b34 90%);display:flex;align-items:center;justify-content:center}
 .cres .pic img{width:100%;height:100%;object-fit:cover}.cres .pic svg{width:70%}
 .cres .ci{flex:1;display:flex;flex-direction:column;gap:2px;line-height:1.25}
@@ -197,7 +197,7 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 .cinfo b{color:var(--text)}
 .chead{font-weight:800;margin:6px 0 8px}
 .crow{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:8px;margin-bottom:8px;border-left:4px solid var(--rc,var(--c-common))}
-.crow.rar-common{--rc:var(--c-common)}.crow.rar-rare{--rc:var(--c-rare)}.crow.rar-epic{--rc:var(--c-epic)}.crow.rar-legendary{--rc:var(--c-legendary)}
+.crow.rar-common{--rc:var(--c-common)}.crow.rar-rare{--rc:var(--c-rare)}.crow.rar-epic{--rc:var(--c-epic)}.crow.rar-legendary{--rc:var(--c-legendary)}.crow.rar-collector{--rc:var(--c-collector)}
 .crow .pic{width:64px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;flex:0 0 auto;background:linear-gradient(135deg,var(--rc),#161b34 90%);display:flex;align-items:center;justify-content:center}
 .crow .pic img{width:100%;height:100%;object-fit:cover}.crow .pic svg{width:70%}
 .crow .cn{flex:1;font-weight:700;font-size:13px;line-height:1.25}
@@ -212,6 +212,32 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 .picker{max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
 .prow{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card2);padding:8px 10px;border-radius:12px;text-align:left}
 .prow .pv{font-weight:800;font-size:13px;white-space:nowrap}
+/* ---------- редкости машин ---------- */
+.car.g{border:2px solid var(--rc)}
+.car.g.rar-common{--rc:var(--c-common)}.car.g.rar-rare{--rc:var(--c-rare)}.car.g.rar-epic{--rc:var(--c-epic)}
+.car.g.rar-legendary{--rc:var(--c-legendary);box-shadow:0 0 16px #ffc94a44}
+.car.g.rar-collector{--rc:var(--c-collector);box-shadow:0 0 22px #ff1f3d88}
+.rbadge{display:inline-block;margin-left:6px;vertical-align:middle;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:var(--rc,var(--c-common));color:#10131f}
+.rar-collector .rbadge{color:#fff}
+.strip-track .slot{transition:opacity .6s,filter .6s,transform .3s}
+.strip-track.done .slot:not(.win){opacity:.22;filter:grayscale(.75) brightness(.5)}
+.slot.rar-collector.win{box-shadow:0 0 0 3px #fff,0 0 30px var(--c-collector),0 0 60px #ff1f3d88}
+.slot.empty{background:radial-gradient(circle at 50% 45%,#4a0a16,#16061c);box-shadow:inset 0 0 22px #ff1f3d66}
+.slot.empty .pic,.slot.empty .sn,.slot.empty .sp{visibility:hidden}
+.slot.empty.rn .sn{visibility:visible;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:10px;color:#ff6b7c;word-break:break-all}
+.slot.empty.done .pic,.slot.empty.done .sp{visibility:visible;animation:popIn .55s ease-out}
+.slot.empty.done .sn{visibility:visible;font-family:inherit;font-size:11px;color:var(--text);animation:popIn .55s ease-out}
+.cres.hold .pic,.cres.hold .ci span,.cres.hold .ci small,.cres.hold .btn{visibility:hidden}
+.cres .ci b.scr{font-family:ui-monospace,Menlo,Consolas,monospace;color:#ff6b7c;word-break:break-all}
+.cres.rar-collector{box-shadow:0 0 26px #ff1f3d77}
+.cres.rar-collector:not(.hold) .pic,.cres.rar-collector:not(.hold) .btn{animation:popIn .55s ease-out}
+.strip-view.redglow{box-shadow:0 0 34px #ff1f3daa;border-color:var(--c-collector)}
+#redflash{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 40%,#ff1f3dcc,#ff1f3d55 45%,transparent 75%)}
+#redflash.on{animation:rflash 1s ease-out}
+@keyframes rflash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+@keyframes popIn{0%{opacity:0;transform:scale(.7)}70%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+.strip-view.shake{animation:shk .55s}
+@keyframes shk{0%,100%{transform:translateX(0)}15%{transform:translateX(-7px)}30%{transform:translateX(6px)}45%{transform:translateX(-5px)}60%{transform:translateX(4px)}80%{transform:translateX(-2px)}}
 </style>
 
 </head>
@@ -302,6 +328,7 @@ nav .badge{position:absolute;top:2px;right:18%;background:var(--gold);color:#1a1
 <div id="modal"><div class="mbox" id="mbox"></div></div>
 <div id="toast"></div>
 
+<div id="redflash"></div>
 <script src="cars.js"></script>
 <script src="containers.js"></script>
 <script>
@@ -518,8 +545,18 @@ const sCoin = () => { tone(1250, .07, 'square', .05); tone(1850, .16, 'square', 
 const sBuy = () => { tone(520, .09, 'triangle', .1); tone(780, .14, 'triangle', .1, .08); };
 const sErr = () => tone(170, .2, 'sawtooth', .07, 0, 110);
 const sChar = i => tone(360 + i * 75, .16, 'triangle', .12);
+const sTickR = () => { const n = performance.now(); if (n - SND.last < 22) return; SND.last = n; tone(420, .05, 'square', .05, 0, 300); };
+const sRiser = d => { tone(70, d, 'sawtooth', .07, 0, 520); tone(140, d, 'sine', .1, 0, 1100); };
+const sGlitch = () => { const n = performance.now(); if (n - SND.last < 30) return; SND.last = n; tone(600 + Math.random() * 1400, .025, 'square', .03); };
+const sLock = i => tone(520 + (i % 14) * 55, .09, 'triangle', .1);
+function sCollector(){
+  tone(55, 1.4, 'sine', .3, 0, 32);                                    // удар
+  [220, 330, 392, 523].forEach((f, i) => tone(f, 1.1, 'sawtooth', .05, .02 + i * .03));
+  [1047, 1319, 1568, 2093, 2637].forEach((f, i) => tone(f, .5, 'triangle', .09, .25 + i * .09));
+}
 const sBig = () => { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, .5, 'triangle', .11, i * .09)); tone(180, .9, 'sine', .1, 0, 720); };
 function sWin(r){
+  if (r === 'collector') return;                                       // у коллекционного свой звук
   if (r === 'legendary') return sBig();
   const seq = r === 'epic' ? [523, 659, 784] : r === 'rare' ? [494, 622] : [440];
   seq.forEach((f, i) => tone(f, .14, 'triangle', .09, i * .08));
@@ -760,16 +797,24 @@ const sprites = PASTELS.map(c => {
   gr.addColorStop(0, '#ffffff'); gr.addColorStop(.25, c); gr.addColorStop(1, c + '00');
   g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return s;
 });
+const REDS = ['#ff1f3d','#ff4d5e','#ff7a4d','#ff0f35','#ffb0b8','#ffd0a0'];
+const redSprites = REDS.map(c => {
+  const s = document.createElement('canvas'); s.width = s.height = 64;
+  const g = s.getContext('2d'), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, '#ffffff'); gr.addColorStop(.25, c); gr.addColorStop(1, c + '00');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64); return s;
+});
 let parts = [], rings = [], raf = 0, lastT = 0;
-function burst(x, y, n, soft){
+function burst(x, y, n, soft, red){
+  const pool = red ? redSprites : sprites;
   for (let i = 0; i < n; i++) {
     const a = Math.random() * Math.PI * 2;
     const sp = soft ? 30 + Math.random() * 90 : 70 + Math.random() * 420;
     parts.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - (soft ? 40 : 30),
-      s: (soft ? 10 : 12) + Math.random() * 26, sp: sprites[Math.floor(Math.random() * sprites.length)],
+      s: (soft ? 10 : 12) + Math.random() * 26, sp: pool[Math.floor(Math.random() * pool.length)],
       life: 0, max: (soft ? 1.4 : 2.2) + Math.random() * 2.2, ph: Math.random() * 6.28 });
   }
-  if (!soft) rings.push({ x, y, life: 0, max: 1.1, col: PASTELS[Math.floor(Math.random() * PASTELS.length)] });
+  if (!soft) rings.push({ x, y, life: 0, max: 1.1, col: red ? REDS[Math.floor(Math.random() * REDS.length)] : PASTELS[Math.floor(Math.random() * PASTELS.length)] });
   if (!raf) { lastT = performance.now(); raf = requestAnimationFrame(loop); }
 }
 function loop(t){
@@ -913,13 +958,13 @@ const sellBtn = (act, id, price) => `<button class="btn ghost" data-act="${act}"
 // гараж: машины из автосалона + выигранные в контейнерах + выданные через give.txt
 function garageItems(){
   const out = [];
-  S.cars.forEach(id => { const c = CARS.find(x => x.id === id); if (c) out.push({ c, key: id, sellAct: 'sellcar', price: c.price }); });
+  S.cars.forEach(id => { const c = CARS.find(x => x.id === id); if (c) out.push({ c, key: id, sellAct: 'sellcar', price: c.price, rar: carRarId(c.price) }); });
   S.xcars.forEach(x => {
     const cat = x.cat ? CARS.find(c => c.id === x.cat) : null;
     const c = x.imgs ? { id: x.id, name: x.name, price: x.price, imgs: x.imgs }
       : cat ? Object.assign({}, cat, { id: x.id, imgId: cat.id, name: x.name, price: x.price })
       : { id: x.id, name: x.name, price: x.price, imgs: nameImgs(x.name) };
-    out.push({ c, key: x.id, sellAct: 'sellx', price: x.price });
+    out.push({ c, key: x.id, sellAct: 'sellx', price: x.price, rar: x.rar || carRarId(x.price) });
   });
   return out.sort((a, b) => b.price - a.price);
 }
@@ -984,20 +1029,31 @@ const CONT_TEMPLATE = `# СВОЁ СОДЕРЖИМОЕ КОНТЕЙНЕРОВ
 #   шанс: число. Чем больше, тем чаще выпадает. Доля машины = её шанс / сумма шансов в контейнере
 #         (в стартовых контейнерах сумма равна 100, поэтому шанс совпадает с процентами)
 #   цена и файл картинки не обязательны. Картинку положите в папку cars.
-#   РЕДКОСТЬ (цвет) можно задать словом в конце строки: обычная, редкая, эпическая или легендарная
-#   (или цветом: серая, синяя, фиолетовая, жёлтая). Без слова цвет считается по доле шанса:
-#   меньше 1.5% жёлтый, до 5% фиолетовый, до 15% синий, дальше серый.
+#   РЕДКОСТЬ (цвет) считается по цене машины:
+#     до 3 500 000 обычное (серое), до 9 000 000 редкое (синее), до 30 000 000 эпическое (фиолетовое),
+#     до 150 000 000 легендарное (жёлтое), от 150 000 000 коллекционное (красное)
+#   Чтобы задать редкость вручную, напишите слово в конце строки: обычное, редкое, эпическое,
+#   легендарное или коллекционное (подойдут и цвета: серое, синее, фиолетовое, жёлтое, красное).
 #   Для новой машины цена обязательна. Если машина с таким названием уже есть, заменятся её шанс, цена и картинка.
 #   Шанс 0 убирает машину из контейнера.
 # ЦЕНА КОНТЕЙНЕРА:                цена | немецкий | 5 000 000
 #
 # Примеры (уберите # в начале строки, чтобы включить):
 # мажорский | 5 | Моя немка | 15 000 000 | my-de.jpg
-# мажорский | 20 | Другая машина | 4 500 000 | other.jpg | эпическая
-# мажорский | 1 | Редкая машина | 90 000 000 | rare.jpg | легендарная
+# мажорский | 20 | Другая машина | 4 500 000 | other.jpg | эпическое
+# мажорский | 1 | Редкая машина | 90 000 000 | rare.jpg | легендарное
 # цена | американский | 4 000 000
 `;
-const RAR_WORDS = [['обыч', 'common'], ['сер', 'common'], ['ред', 'rare'], ['син', 'rare'], ['эпи', 'epic'], ['фиол', 'epic'], ['леген', 'legendary'], ['жёл', 'legendary'], ['жел', 'legendary']];
+const CAR_RARS = [
+  { id: 'common', name: 'Обычное', max: 3500000 },
+  { id: 'rare', name: 'Редкое', max: 9000000 },
+  { id: 'epic', name: 'Эпическое', max: 30000000 },
+  { id: 'legendary', name: 'Легендарное', max: 150000000 },
+  { id: 'collector', name: 'Коллекционное', max: Infinity }
+];
+const carRarId = price => CAR_RARS.find(r => price < r.max).id;
+const carRarName = id => (CAR_RARS.find(r => r.id === id) || CAR_RARS[0]).name;
+const RAR_WORDS = [['коллек', 'collector'], ['крас', 'collector'], ['обыч', 'common'], ['сер', 'common'], ['ред', 'rare'], ['син', 'rare'], ['эпи', 'epic'], ['фиол', 'epic'], ['леген', 'legendary'], ['жёл', 'legendary'], ['жел', 'legendary']];
 let contErrors = 0, CONTS = [];
 function buildConts(text){
   const base = (window.CONTAINERS || []).map(c => Object.assign({}, c, { cars: c.cars.map(x => Object.assign({}, x)) }));
@@ -1050,12 +1106,12 @@ function pickCar(c){
   for (const x of c.cars) { r -= x.chance; if (r <= 0) return x; }
   return c.cars[c.cars.length - 1];
 }
-const slotClass = (x, c) => { if (x.rar) return x.rar; const p = x.chance / contTotal(c) * 100; return p >= 15 ? 'common' : p >= 5 ? 'rare' : p >= 1.5 ? 'epic' : 'legendary'; };
+const slotClass = x => x.rar || carRarId(x.price);
 function pctStr(x, c){
   const p = x.chance / contTotal(c) * 100;
   return (p >= 10 ? p.toFixed(0) : p >= 1 ? p.toFixed(1) : p.toFixed(2)).replace(/\.0+$/, '') + '%';
 }
-const slotHTML = (x, c) => `<div class="slot rar-${slotClass(x, c)}"><div class="pic">${carImg(x)}</div><div class="sn">${esc(x.name)}</div><div class="sp">${fmt(x.price)}</div></div>`;
+const slotHTML = (x, c) => `<div class="slot rar-${slotClass(x)}${slotClass(x) === 'collector' ? ' empty' : ''}"><div class="pic">${carImg(x)}</div><div class="sn">${esc(x.name)}</div><div class="sp">${fmt(x.price)}</div></div>`;
 const curContObj = () => CONTS.find(c => c.id === curCont) || CONTS[0];
 function setTrack(pos){ $('#stripTrack').style.transform = 'translate3d(' + (-pos) + 'px,0,0)'; }
 
@@ -1071,7 +1127,7 @@ function renderCont(){
   const c = curContObj();
   tabs.innerHTML = CONTS.map(x => `<button class="chip${x.id === curCont ? ' active' : ''}" style="--sc:${x.color || '#ffd34e'}" data-cont="${esc(x.id)}">${x.flag || ''} ${esc(x.name)}</button>`).join('') +
     (BRIDGE ? '<button class="chip" style="--sc:#c9d1ff" data-reload="1">⟳ Обновить</button>' : '');
-  btn.textContent = busyC ? 'Идёт прокрут…' : `Открыть за ${fmt(c.price)}`;
+  btn.textContent = busyC ? 'Открываем…' : `Открыть за ${fmt(c.price)}`;
   btn.className = 'btn openbtn ' + (S.money >= c.price && !busyC && c.cars.length ? 'sell' : 'ghost');
   if (busyC) return;                        // во время прокрута ленту и список не перерисовываем
   if (idleFor !== c.id) {
@@ -1086,7 +1142,7 @@ function renderCont(){
     ? `Редактирование: файл <b>my_containers.txt</b> в папке PlatesGame (шансы, машины, картинки, цена контейнера)` + (contErrors ? ` · строк с ошибкой: <b>${contErrors}</b>` : '')
     : 'Редактирование: файл containers.js (в приложении ещё и my_containers.txt в папке PlatesGame)';
   const sorted = c.cars.slice().sort((a, b) => b.chance - a.chance);
-  $('#contList').innerHTML = !sorted.length ? '<div class="empty">Контейнер пуст.<br>Добавьте машины в файл my_containers.txt<br>(папка PlatesGame), строка: <b>' + esc(c.name.toLowerCase()) + ' | шанс | название | цена | файл.jpg</b></div>' : sorted.map(x => `<div class="crow rar-${slotClass(x, c)}"><div class="pic">${carImg(x)}</div><div class="cn">${esc(x.name)}<small>${fmt(x.price)}</small></div><div class="cp">${pctStr(x, c)}</div></div>`).join('');
+  $('#contList').innerHTML = !sorted.length ? '<div class="empty">Контейнер пуст.<br>Добавьте машины в файл my_containers.txt<br>(папка PlatesGame), строка: <b>' + esc(c.name.toLowerCase()) + ' | шанс | название | цена | файл.jpg</b></div>' : sorted.map(x => `<div class="crow rar-${slotClass(x)}"><div class="pic">${carImg(x)}</div><div class="cn">${esc(x.name)}<small>${fmt(x.price)} · ${carRarName(slotClass(x))}</small></div><div class="cp">${pctStr(x, c)}</div></div>`).join('');
 }
 
 function openContainer(){
@@ -1098,10 +1154,11 @@ function openContainer(){
   S.money -= c.price;
   const winner = pickCar(c);
   const xid = 'x' + (++S.xseq);
-  S.xcars.push({ id: xid, name: winner.name, price: winner.price, cat: '', imgs: carImgList(winner) });
+  S.xcars.push({ id: xid, name: winner.name, price: winner.price, cat: '', imgs: carImgList(winner), rar: slotClass(winner) });
   save();
   renderMoney('down'); renderBadges(); renderCont();
   $('#contResult').innerHTML = '';
+  $('#stripView').classList.remove('redglow', 'shake');
   sBuy();
 
   // лента: случайные машины, выигрышная стоит на 50-м месте
@@ -1109,6 +1166,7 @@ function openContainer(){
   const items = Array.from({ length: N }, () => pickCar(c)); items[WIN] = winner;
   const track = $('#stripTrack');
   track.style.transition = 'none';
+  track.classList.remove('done');
   track.innerHTML = items.map(x => slotHTML(x, c)).join('');
   const p0 = 3 * SLOT_STEP + SLOT_W / 2;
   const jitter = (Math.random() - .5) * SLOT_W * .7;      // остановка не всегда ровно по центру слота
@@ -1122,23 +1180,66 @@ function openContainer(){
     const pos = p0 + (p1 - p0) * e;
     setTrack(pos);
     const idx = Math.floor(pos / SLOT_STEP);
-    if (idx !== lastIdx) { lastIdx = idx; sTick(); }
+    if (idx !== lastIdx) { lastIdx = idx; (items[idx] && slotClass(items[idx]) === 'collector') ? sTickR() : sTick(); }
     if (k < 1) { requestAnimationFrame(frame); return; }
     finish();
   })(t0);
 
+  function resultHTML(cls, hold){
+    return `<div class="cres rar-${cls}${hold ? ' hold' : ''}"><div class="pic">${carImg(winner)}</div><div class="ci"><b id="cName">${esc(winner.name)}</b><span>${fmt(winner.price)} · шанс ${pctStr(winner, c)}</span><small>${carRarName(cls)} · уже в гараже</small></div>` +
+      `<button class="btn ghost" data-act="sellnow" data-cid="${xid}">Продать<br><small>${fmt(winner.price * SELL_RATE)}</small></button></div>`;
+  }
   function finish(){
-    busyC = false;
     const slot = track.children[WIN]; if (slot) slot.classList.add('win');
-    const cls = slotClass(winner, c);
-    sWin(cls === 'legendary' ? 'legendary' : cls); vibrate(cls === 'legendary' ? [40, 60, 40, 60, 120] : [25]);
+    track.classList.add('done');                                   // остальные слоты затеняются
+    const cls = slotClass(winner), view = $('#stripView');
+    if (cls === 'collector') { collectorReveal(slot, view); return; }
+    busyC = false;
+    sWin(cls); vibrate(cls === 'legendary' ? [40, 60, 40, 60, 120] : [25]);
     if (cls === 'legendary' || cls === 'epic') {
-      const r = $('#stripView').getBoundingClientRect();
+      const r = view.getBoundingClientRect();
       burst(r.left + r.width / 2, r.top + r.height / 2, cls === 'legendary' ? 150 : 80);
     }
-    $('#contResult').innerHTML = `<div class="cres rar-${cls}"><div class="pic">${carImg(winner)}</div><div class="ci"><b>${esc(winner.name)}</b><span>${fmt(winner.price)} · шанс ${pctStr(winner, c)}</span><small>Машина уже в гараже</small></div>` +
-      `<button class="btn ghost" data-act="sellnow" data-cid="${xid}">Продать<br><small>${fmt(winner.price * SELL_RATE)}</small></button></div>`;
+    $('#contResult').innerHTML = resultHTML(cls, false);
     renderAll();
+  }
+
+  // коллекционное: слот пустой, название собирается из случайных символов, потом появляется картинка
+  function collectorReveal(slot, view){
+    const r = view.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    view.classList.add('redglow');
+    sRiser(1.6); vibrate([30, 40, 30]);
+    burst(cx, cy, 40, true, true);
+    $('#contResult').innerHTML = resultHTML('collector', true);
+    const nm = $('#cName'), sn = slot && slot.querySelector('.sn');
+    nm.classList.add('scr'); if (slot) slot.classList.add('rn');
+    const name = winner.name, POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ';
+    const idxs = []; for (let i = 0; i < name.length; i++) if (/[0-9A-Za-zА-Яа-яЁё]/.test(name[i])) idxs.push(i);
+    const total = Math.max(1800, Math.min(3600, idxs.length * 110));
+    const t1 = performance.now() + 500;                          // небольшая пауза перед сборкой
+    let shown = -1;
+    (function step(now){
+      const k = Math.max(0, Math.min(1, (now - t1) / total));
+      const done = Math.floor(k * idxs.length);
+      let out = '';
+      for (let i = 0; i < name.length; i++) {
+        const ci = idxs.indexOf(i);
+        out += ci < 0 ? name[i] : ci < done ? name[i] : POOL[Math.floor(Math.random() * POOL.length)];
+      }
+      nm.textContent = out; if (sn) sn.textContent = out;
+      if (now >= t1 && done !== shown) { shown = done; if (done > 0) sLock(done); }
+      else if (k < 1) sGlitch();
+      if (k < 1) { requestAnimationFrame(step); return; }
+      nm.textContent = name; nm.classList.remove('scr'); if (sn) sn.textContent = name;
+      if (slot) { slot.classList.remove('rn'); slot.classList.add('done'); }
+      $('#contResult .cres').classList.remove('hold');
+      sCollector(); vibrate([60, 50, 60, 50, 200]);
+      const f = $('#redflash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on');
+      view.classList.remove('shake'); void view.offsetWidth; view.classList.add('shake');
+      burst(cx, cy, 220, false, true); setTimeout(() => burst(cx - 60, cy + 10, 120, false, true), 250); setTimeout(() => burst(cx + 60, cy, 120, false, true), 450);
+      busyC = false;
+      renderAll();
+    })(performance.now());
   }
 }
 function sellNow(xid){
@@ -1161,8 +1262,8 @@ function renderGarage(){
   list.style.setProperty('--sc', '#c9d1ff');
   list.innerHTML = gar.length ? gar.map(g => {
     const pl = S.cplates[g.key];
-    return `<div class="car"><div class="pic">${carImg(g.c)}${pl ? `<div class="onplate">${plateEl(pl, 'sm').outerHTML}</div>` : ''}</div>` +
-      `<div class="info"><div class="nm">${esc(g.c.name)}<span class="pr">${fmt(g.price)}</span></div><div class="gb">` +
+    return `<div class="car g rar-${g.rar}"><div class="pic">${carImg(g.c)}${pl ? `<div class="onplate">${plateEl(pl, 'sm').outerHTML}</div>` : ''}</div>` +
+      `<div class="info"><div class="nm">${esc(g.c.name)}<span class="pr">${fmt(g.price)}<span class="rbadge">${carRarName(g.rar)}</span></span></div><div class="gb">` +
       `<button class="btn safe" data-act="plate" data-cid="${esc(g.key)}">${pl ? 'Снять номер' : '🔢 Повесить номер'}</button>${sellBtn(g.sellAct, g.key, g.price)}</div></div></div>`;
   }).join('') : '<div class="empty">Гараж пуст.<br>Купите машину в автосалоне или выбейте её в контейнере.</div>';
   list.scrollTop = top;
